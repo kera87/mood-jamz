@@ -244,6 +244,8 @@
     .album-actions { display:flex; gap:10px; flex-wrap:wrap; padding-top:4px; }
     .btn-primary { padding:11px 22px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; border-radius:12px; color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:7px; transition:all .28s var(--ease); }
     .btn-primary:hover { box-shadow:0 8px 26px var(--glow); filter:brightness(1.08); }
+    .btn-apple { padding:11px 22px; background:linear-gradient(135deg,#FA243C,#C63D4B); border:none; border-radius:12px; color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:7px; transition:all .28s var(--ease); }
+    .btn-apple:hover { box-shadow:0 8px 26px rgba(250,36,60,.35); filter:brightness(1.08); }
     .btn-secondary { padding:11px 22px; background:transparent; border:1px solid rgba(255,255,255,.28); border-radius:12px; color:var(--text-1); font-family:inherit; font-size:.82rem; font-weight:600; cursor:pointer; transition:all .28s var(--ease); }
     .btn-secondary:hover { background:rgba(255,255,255,.12); border-color:var(--accent); color:var(--accent); }
     .btn-save { padding:11px 22px; background:transparent; border:1px solid rgba(255,255,255,.28); border-radius:12px; color:var(--text-1); font-family:inherit; font-size:.82rem; font-weight:600; cursor:pointer; display:none; align-items:center; gap:6px; transition:all .28s var(--ease); }
@@ -443,9 +445,10 @@
         <div class="progress-step"></div>
         <div class="progress-step"></div>
         <div class="progress-step"></div>
+        <div class="progress-step"></div>
       </div>
       <div class="ob-header">
-        <p class="quiz-page-label">Step 1 of 4 — Taste Profile</p>
+        <p class="quiz-page-label">Step 1 of 5 — Taste Profile</p>
         <h2 class="ob-title">What genres move you?</h2>
         <p class="ob-sub">Select everything you love. We use this to personalise your recommendations.</p>
       </div>
@@ -463,6 +466,7 @@
     <div class="ob-wrap">
       <div class="progress-bar" id="pb-quiz">
         <div class="progress-step done"></div>
+        <div class="progress-step"></div>
         <div class="progress-step"></div>
         <div class="progress-step"></div>
         <div class="progress-step"></div>
@@ -597,6 +601,10 @@
                 <a id="spotifyBtn" class="btn-primary" href="#" target="_blank" rel="noopener">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
                   Spotify
+                </a>
+                <a id="appleMusicBtn" class="btn-apple" href="#" target="_blank" rel="noopener">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.994 17.505a12.013 12.013 0 0 0-.096-1.815 11.979 11.979 0 0 0-1.007-3.415 12.028 12.028 0 0 0-1.62-2.634 12.047 12.047 0 0 0-2.634-1.62 11.979 11.979 0 0 0-3.415-1.007 12.013 12.013 0 0 0-3.63-.096 12.024 12.024 0 0 0-3.472 1.013 12.02 12.02 0 0 0-3.006 1.973 12.028 12.028 0 0 0-1.973 3.006 12.024 12.024 0 0 0-1.013 3.472c-.063.6-.096 1.203-.096 1.815s.033 1.215.096 1.815a12.013 12.013 0 0 0 1.007 3.415 12.028 12.028 0 0 0 1.62 2.634 12.047 12.047 0 0 0 2.634 1.62 11.979 11.979 0 0 0 3.415 1.007 12.013 12.013 0 0 0 3.63.096 12.024 12.024 0 0 0 3.472-1.013 12.02 12.02 0 0 0 3.006-1.973 12.028 12.028 0 0 0 1.973-3.006 12.024 12.024 0 0 0 1.013-3.472c.063-.6.096-1.203.096-1.815zm-6.991-2.708c0 .505-.061.999-.181 1.475-.121.476-.288.924-.502 1.344-.214.42-.471.804-.771 1.152-.3.348-.638.654-1.013.918-.375.264-.781.471-1.218.621-.437.15-.895.225-1.374.225-.366 0-.732-.045-1.098-.135-.366-.09-.708-.225-1.026-.405-.318-.18-.597-.405-.837-.675-.24-.27-.417-.585-.531-.945-.114-.36-.171-.765-.171-1.215 0-.465.075-.93.225-1.395.15-.465.375-.93.675-1.395.3-.465.675-.93 1.125-1.395.45-.465.975-.93 1.575-1.395.6-.465 1.275-.93 2.025-1.395.075.09.15.18.225.27.075.09.15.195.225.315.075.12.15.24.225.36.075.12.135.255.195.405.06.15.105.315.135.495.03.18.045.39.045.63zm-.855-6.075c0 .42-.045.825-.135 1.215-.09.39-.21.75-.36 1.08-.15.33-.33.63-.54.9-.21.27-.435.495-.675.675-.24.18-.48.3-.72.36-.465.12-.96.18-1.485.18-.765 0-1.515-.165-2.25-.495-.735-.33-1.41-.765-1.965-1.305-.555-.54-1.005-1.14-1.35-1.8-.345-.66-.555-1.32-.63-1.98.015-.075.03-.15.045-.225.015-.075.03-.15.045-.225.06-.27.135-.525.225-.765.09-.24.195-.465.315-.675.12-.21.255-.405.405-.585.15-.18.315-.345.495-.495.18-.15.375-.285.585-.405.21-.12.435-.225.675-.315.24-.09.495-.165.765-.225.27-.06.555-.105.855-.135.3-.03.615-.045.945-.045.48 0 .945.06 1.395.18.45.12.87.285 1.26.495.39.21.735.465 1.035.78.3.315.54.675.72 1.08.18.405.27.855.27 1.35z"/></svg>
+                  Apple Music
                 </a>
                 <button id="saveBtn" class="btn-save" onclick="toggleSave()">♡ Save Album</button>
                 <button class="btn-secondary" onclick="generateAlbum()">Try Another ↻</button>
@@ -815,6 +823,7 @@
     world:'world-music',latin:'latin',gospel:'gospel',afrobeats:'afrobeat',
     kpop:'k-pop',shoegaze:'shoegaze','dream-pop':'dream-pop',psychedelic:'psych-rock',
     'new-wave':'new-wave',grunge:'grunge',progressive:'progressive-house',
+    soundtracks:'soundtracks',
   };
 
   const JOURNAL_PROMPTS = {
@@ -894,6 +903,7 @@
     {id:'dream-pop',emoji:'☁️',label:'Dream Pop'},{id:'psychedelic',emoji:'🌈',label:'Psychedelic'},
     {id:'new-wave',emoji:'〰️',label:'New Wave'},{id:'grunge',emoji:'☔',label:'Grunge'},
     {id:'progressive',emoji:'🌀',label:'Progressive Rock'},
+    {id:'soundtracks',emoji:'🎬',label:'Soundtracks'},
   ];
 
   const QUIZ_PAGES = [
@@ -932,6 +942,18 @@
       {title:'Melodrama',artist:'Lorde',search:'Melodrama Lorde',genreTags:['pop','indie'],moods:['excited','happy','melancholic']},
       {title:'Igor',artist:'Tyler, the Creator',search:'Igor Tyler the Creator',genreTags:['neo-soul','pop'],moods:['romantic','excited','melancholic']},
       {title:'Ctrl',artist:'SZA',search:'Ctrl SZA',genreTags:['rnb','neo-soul'],moods:['happy','melancholic','nostalgic','calm']},
+    ]},
+    { title:'The Soundtracks', subtitle:'Films, TV & games that moved us', albums:[
+      {title:'O Brother, Where Art Thou?',artist:'Various Artists',search:'O Brother Where Art Thou soundtrack',genreTags:['soundtracks','folk','country'],moods:['nostalgic','calm','happy']},
+      {title:'Guardians of the Galaxy',artist:'Various Artists',search:'Guardians of the Galaxy soundtrack',genreTags:['soundtracks','pop','rock'],moods:['happy','energetic','nostalgic']},
+      {title:'La La Land',artist:'Justin Hurwitz',search:'La La Land soundtrack',genreTags:['soundtracks','jazz','pop'],moods:['romantic','nostalgic','happy']},
+      {title:'Black Panther',artist:'Kendrick Lamar',search:'Black Panther soundtrack',genreTags:['soundtracks','hiphop'],moods:['energetic','focused','excited']},
+      {title:'Drive',artist:'Cliff Martinez',search:'Drive soundtrack',genreTags:['soundtracks','electronic'],moods:['romantic','melancholic','calm']},
+      {title:'Dirty Dancing',artist:'Various Artists',search:'Dirty Dancing soundtrack',genreTags:['soundtracks','pop','disco'],moods:['romantic','happy','energetic']},
+      {title:'Stranger Things',artist:'Kyle Dixon',search:'Stranger Things soundtrack',genreTags:['soundtracks','electronic'],moods:['nostalgic','anxious','calm']},
+      {title:'Amélie',artist:'Yann Tiersen',search:'Amelie soundtrack',genreTags:['soundtracks','classical'],moods:['happy','romantic','calm']},
+      {title:'The Last of Us',artist:'Gustavo Santaolalla',search:'The Last of Us soundtrack',genreTags:['soundtracks','folk'],moods:['melancholic','sad','calm']},
+      {title:'Encanto',artist:'Lin-Manuel Miranda',search:'Encanto soundtrack',genreTags:['soundtracks','latin','pop'],moods:['happy','energetic','nostalgic']},
     ]},
   ];
 
@@ -1071,6 +1093,42 @@
     {title:"You're Dead!",artist:'Flying Lotus',year:2014,genre:'Jazz / Electronic',genreTags:['electronic','jazz','hiphop'],moods:['focused','energetic','anxious'],times:['afternoon','evening'],vibe:'A frantic, exhilarating meditation on mortality — jazz fusion for the digital age, played at light speed.',search:"You're Dead Flying Lotus"},
     {title:'After Hours',artist:'The Weeknd',year:2020,genre:'Pop / R&B',genreTags:['pop','rnb'],moods:['romantic','melancholic','energetic','anxious'],times:['night'],vibe:'Synth-drenched noir pop that transforms heartbreak and paranoia into cinematic, neon-lit spectacle.',search:'After Hours Weeknd'},
     {title:'Lemonade',artist:'Beyoncé',year:2016,genre:'Pop / R&B',genreTags:['pop','rnb'],moods:['energetic','angry','excited','happy','sad'],times:['afternoon','evening'],vibe:'A visual and sonic reckoning — defiant, complex, and one of the most commanding artistic statements of its era.',search:'Lemonade Beyonce'},
+    // ── Soundtracks ──
+    {title:'O Brother, Where Art Thou?',artist:'Various Artists',year:2000,genre:'Soundtrack',genreTags:['soundtracks','folk','country'],moods:['nostalgic','calm','happy','peaceful'],times:['morning','afternoon'],vibe:'A journey through Depression-era Americana — bluegrass, gospel, and folk that feels like dust and sunlight.',search:'O Brother Where Art Thou soundtrack'},
+    {title:'Trainspotting',artist:'Various Artists',year:1996,genre:'Soundtrack',genreTags:['soundtracks','electronic','rock'],moods:['energetic','anxious','excited','nostalgic'],times:['afternoon','evening','night'],vibe:'Britpop and electronic mayhem — the sound of excess, escape, and choosing life.',search:'Trainspotting soundtrack'},
+    {title:'Pulp Fiction',artist:'Various Artists',year:1994,genre:'Soundtrack',genreTags:['soundtracks','surf','soul','rock'],moods:['energetic','nostalgic','excited','focused'],times:['afternoon','evening'],vibe:'Surf rock, soul, and rockabilly — Tarantino\'s perfect mix of cool, violence, and nostalgia.',search:'Pulp Fiction soundtrack'},
+    {title:'Guardians of the Galaxy: Awesome Mix Vol. 1',artist:'Various Artists',year:2014,genre:'Soundtrack',genreTags:['soundtracks','pop','rock','disco'],moods:['happy','energetic','nostalgic','excited'],times:['morning','afternoon','evening'],vibe:'70s hits that defined a generation — pure joy, adventure, and the power of a perfect mixtape.',search:'Guardians of the Galaxy soundtrack'},
+    {title:'Guardians of the Galaxy Vol. 2: Awesome Mix Vol. 2',artist:'Various Artists',year:2017,genre:'Soundtrack',genreTags:['soundtracks','pop','rock','folk'],moods:['happy','nostalgic','melancholic','calm'],times:['afternoon','evening'],vibe:'More cosmic hits — Fleetwood Mac, Cat Stevens, and the emotional core of found family.',search:'Guardians of the Galaxy Vol 2 soundtrack'},
+    {title:'Dirty Dancing',artist:'Various Artists',year:1987,genre:'Soundtrack',genreTags:['soundtracks','pop','disco','rnb'],moods:['romantic','happy','energetic','nostalgic'],times:['afternoon','evening'],vibe:'The time of your life — classic pop and soul that defined summer romance for a generation.',search:'Dirty Dancing soundtrack'},
+    {title:'Saturday Night Fever',artist:'Bee Gees',year:1977,genre:'Soundtrack',genreTags:['soundtracks','disco','pop'],moods:['energetic','happy','excited','nostalgic'],times:['evening','night'],vibe:'Disco at its peak — falsetto harmonies and four-on-the-floor that never stops moving.',search:'Saturday Night Fever soundtrack'},
+    {title:'Top Gun',artist:'Various Artists',year:1986,genre:'Soundtrack',genreTags:['soundtracks','rock','pop'],moods:['energetic','excited','nostalgic','happy'],times:['afternoon','evening'],vibe:'Highway to the danger zone — 80s rock anthems built for speed and sky.',search:'Top Gun soundtrack'},
+    {title:'Grease',artist:'Various Artists',year:1978,genre:'Soundtrack',genreTags:['soundtracks','pop','rock'],moods:['happy','romantic','energetic','nostalgic'],times:['afternoon','evening'],vibe:'Summer nights and leather jackets — the ultimate high school musical.',search:'Grease soundtrack'},
+    {title:'La La Land',artist:'Justin Hurwitz',year:2016,genre:'Soundtrack',genreTags:['soundtracks','jazz','pop','classical'],moods:['romantic','nostalgic','happy','melancholic'],times:['morning','evening','night'],vibe:'A love letter to jazz and old Hollywood — dreamy, bittersweet, and impossibly romantic.',search:'La La Land soundtrack'},
+    {title:'Black Panther',artist:'Kendrick Lamar & Various',year:2018,genre:'Soundtrack',genreTags:['soundtracks','hiphop','pop','afrobeats'],moods:['energetic','focused','excited','nostalgic'],times:['afternoon','evening'],vibe:'Wakanda forever — hip-hop, African rhythms, and a cultural moment in sound.',search:'Black Panther soundtrack'},
+    {title:'Spider-Man: Into the Spider-Verse',artist:'Various Artists',year:2018,genre:'Soundtrack',genreTags:['soundtracks','hiphop','pop','electronic'],moods:['energetic','happy','excited','focused'],times:['afternoon','evening'],vibe:'Leap of faith — bass-heavy hip-hop and electronic beats for the multiverse.',search:'Spider-Man Into the Spider-Verse soundtrack'},
+    {title:'Moonlight',artist:'Nicholas Britell',year:2016,genre:'Soundtrack',genreTags:['soundtracks','classical','electronic'],moods:['melancholic','calm','romantic','sad'],times:['evening','night'],vibe:'Orchestral and electronic tenderness — the sound of a life unfolding in three acts.',search:'Moonlight soundtrack'},
+    {title:'Drive',artist:'Cliff Martinez',year:2011,genre:'Soundtrack',genreTags:['soundtracks','electronic','synth-pop'],moods:['romantic','melancholic','calm','anxious'],times:['night'],vibe:'Neon-lit synthwave — a real human being and a real hero, cruising through the night.',search:'Drive soundtrack'},
+    {title:'The Social Network',artist:'Trent Reznor & Atticus Ross',year:2010,genre:'Soundtrack',genreTags:['soundtracks','electronic','ambient'],moods:['focused','anxious','calm','melancholic'],times:['night'],vibe:'Cold, precise, and hypnotic — the sound of code, ambition, and isolation.',search:'The Social Network soundtrack'},
+    {title:'Inception',artist:'Hans Zimmer',year:2010,genre:'Soundtrack',genreTags:['soundtracks','classical','electronic'],moods:['focused','anxious','energetic','melancholic'],times:['evening','night'],vibe:'Dreams within dreams — that horn motif and layers of tension that never release.',search:'Inception soundtrack'},
+    {title:'Interstellar',artist:'Hans Zimmer',year:2014,genre:'Soundtrack',genreTags:['soundtracks','classical','ambient'],moods:['melancholic','calm','nostalgic','focused'],times:['night','morning'],vibe:'Organ and space — love transcending time, rendered in vast, aching sound.',search:'Interstellar soundtrack'},
+    {title:'Blade Runner',artist:'Vangelis',year:1982,genre:'Soundtrack',genreTags:['soundtracks','electronic','ambient'],moods:['melancholic','calm','romantic','nostalgic'],times:['night'],vibe:'Rain-soaked synth noir — the sound of neon, rain, and what it means to be human.',search:'Blade Runner soundtrack'},
+    {title:'Tron: Legacy',artist:'Daft Punk',year:2010,genre:'Soundtrack',genreTags:['soundtracks','electronic','orchestral'],moods:['energetic','focused','nostalgic','calm'],times:['evening','night'],vibe:'The grid — orchestral electronic that feels like light cycles and digital worlds.',search:'Tron Legacy soundtrack'},
+    {title:'Juno',artist:'Various Artists',year:2007,genre:'Soundtrack',genreTags:['soundtracks','indie','folk'],moods:['happy','nostalgic','calm','melancholic'],times:['morning','afternoon'],vibe:'Indie folk and twee pop — the sound of being sixteen and figuring it out.',search:'Juno soundtrack'},
+    {title:'Garden State',artist:'Various Artists',year:2004,genre:'Soundtrack',genreTags:['soundtracks','indie','folk','alternative'],moods:['melancholic','nostalgic','calm','romantic'],times:['afternoon','evening'],vibe:'The Shins will change your life — indie rock and folk for the lost and found.',search:'Garden State soundtrack'},
+    {title:'Lost in Translation',artist:'Various Artists',year:2003,genre:'Soundtrack',genreTags:['soundtracks','dream-pop','shoegaze','electronic'],moods:['melancholic','calm','romantic','nostalgic'],times:['night'],vibe:'Tokyo at 3am — dream-pop, shoegaze, and the quiet connection between strangers.',search:'Lost in Translation soundtrack'},
+    {title:'The Virgin Suicides',artist:'Air',year:1999,genre:'Soundtrack',genreTags:['soundtracks','electronic','dream-pop'],moods:['melancholic','romantic','calm','nostalgic'],times:['evening','night'],vibe:'Hazy, sun-drenched melancholy — French electronic scoring suburban mystery.',search:'The Virgin Suicides soundtrack'},
+    {title:'Amélie',artist:'Yann Tiersen',year:2001,genre:'Soundtrack',genreTags:['soundtracks','classical','folk'],moods:['happy','romantic','calm','nostalgic'],times:['morning','afternoon'],vibe:'Parisian whimsy — accordion, piano, and the joy of small, beautiful moments.',search:'Amelie soundtrack'},
+    {title:'Crouching Tiger, Hidden Dragon',artist:'Tan Dun',year:2000,genre:'Soundtrack',genreTags:['soundtracks','classical','world'],moods:['romantic','calm','melancholic','peaceful'],times:['evening','night'],vibe:'East meets West — cello and erhu in a soaring wuxia romance.',search:'Crouching Tiger Hidden Dragon soundtrack'},
+    {title:'Kill Bill Vol. 1',artist:'Various Artists',year:2003,genre:'Soundtrack',genreTags:['soundtracks','surf','rock','electronic'],moods:['energetic','angry','excited','focused'],times:['afternoon','evening'],vibe:'Revenge never sounded so cool — surf, spaghetti western, and that whistle.',search:'Kill Bill soundtrack'},
+    {title:'The Lion King',artist:'Hans Zimmer & Elton John',year:1994,genre:'Soundtrack',genreTags:['soundtracks','pop','world','orchestral'],moods:['happy','nostalgic','melancholic','calm'],times:['morning','afternoon'],vibe:'The circle of life — African rhythms, Broadway grandeur, and Elton John.',search:'The Lion King soundtrack'},
+    {title:'Frozen',artist:'Various Artists',year:2013,genre:'Soundtrack',genreTags:['soundtracks','pop','broadway'],moods:['happy','romantic','nostalgic','calm'],times:['morning','afternoon'],vibe:'Let it go — Disney magic, empowerment anthems, and snow.',search:'Frozen soundtrack'},
+    {title:'Encanto',artist:'Lin-Manuel Miranda & Various',year:2021,genre:'Soundtrack',genreTags:['soundtracks','latin','pop'],moods:['happy','energetic','nostalgic','calm'],times:['morning','afternoon','evening'],vibe:'We don\'t talk about Bruno — Colombian rhythms and a family like no other.',search:'Encanto soundtrack'},
+    {title:'Soul',artist:'Trent Reznor & Atticus Ross',year:2020,genre:'Soundtrack',genreTags:['soundtracks','jazz','electronic'],moods:['calm','focused','melancholic','peaceful'],times:['morning','evening','night'],vibe:'Jazz, the great before, and what makes life worth living.',search:'Soul soundtrack'},
+    {title:'Stranger Things',artist:'Kyle Dixon & Michael Stein',year:2016,genre:'Soundtrack',genreTags:['soundtracks','electronic','synth'],moods:['nostalgic','anxious','calm','focused'],times:['night'],vibe:'80s synth nostalgia and otherworldly dread — the upside down in sound.',search:'Stranger Things soundtrack'},
+    {title:'The Last of Us',artist:'Gustavo Santaolalla',year:2013,genre:'Soundtrack',genreTags:['soundtracks','folk','ambient'],moods:['melancholic','sad','calm','nostalgic'],times:['evening','night'],vibe:'Sparse guitar and silence — survival, loss, and the weight of love.',search:'The Last of Us soundtrack'},
+    {title:'Red Dead Redemption 2',artist:'Woody Jackson',year:2018,genre:'Soundtrack',genreTags:['soundtracks','country','folk','ambient'],moods:['melancholic','nostalgic','calm','peaceful'],times:['morning','evening'],vibe:'The American frontier — campfire songs, horseback rides, and the end of an era.',search:'Red Dead Redemption 2 soundtrack'},
+    {title:'A Star Is Born',artist:'Lady Gaga & Bradley Cooper',year:2018,genre:'Soundtrack',genreTags:['soundtracks','pop','country','rock'],moods:['romantic','melancholic','sad','nostalgic'],times:['evening','night'],vibe:'Shallow and the depths — raw country-rock and pop ballads of love and loss.',search:'A Star Is Born soundtrack'},
+    {title:'The Greatest Showman',artist:'Various Artists',year:2017,genre:'Soundtrack',genreTags:['soundtracks','pop','broadway'],moods:['happy','energetic','excited','romantic'],times:['afternoon','evening'],vibe:'The greatest show — anthems of belonging, ambition, and spectacle.',search:'The Greatest Showman soundtrack'},
   ];
 
   /* ================================================================
@@ -1417,6 +1475,8 @@
     document.getElementById('albumTags').innerHTML=`<span class="tag ${isSpotify?'spotify-tag':''}">${album.genre}</span><span class="tag">${album.year}</span>${isSpotify?'<span class="tag spotify-tag">via Spotify</span>':''}`;
     const spotLink=document.getElementById('spotifyBtn');
     spotLink.href=album.spotifyUrl||(album.isSpotify?'#':`https://open.spotify.com/search/${encodeURIComponent(album.title+' '+album.artist)}`);
+    const appleLink=document.getElementById('appleMusicBtn');
+    appleLink.href=`https://music.apple.com/search?term=${encodeURIComponent(album.title+' '+album.artist)}`;
     const img=document.getElementById('artImg'),ph=document.getElementById('artPlaceholder');
     img.classList.remove('loaded'); ph.style.display='';
     if(artUrl){img.src=artUrl;img.alt=`${album.title} by ${album.artist}`;}
