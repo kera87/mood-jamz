@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Album of the Day</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg-1:#050510; --bg-2:#0f0c29; --bg-3:#302b63;
+      --orb-1:#818cf8; --orb-2:#c084fc;
+      --accent:#818cf8; --accent-2:#c084fc;
+      --glow:rgba(129,140,248,.28);
+      --glass:rgba(255,255,255,.07); --glass-border:rgba(255,255,255,.12);
+      --text-1:#ffffff; --text-2:rgba(255,255,255,.88); --text-3:rgba(255,255,255,.72);
+      --ease:cubic-bezier(.4,0,.2,1); --red:#ef4444;
+    }
+    [data-time="morning"]   { --bg-1:#00172d; --bg-2:#00407a; --bg-3:#0077b6; --orb-1:#48dbfb; --orb-2:#a8e063; --accent:#48dbfb; --accent-2:#74d7a8; --glow:rgba(72,219,251,.28); }
+    [data-time="afternoon"] { --bg-1:#1a0a00; --bg-2:#8b1a00; --bg-3:#d4520a; --orb-1:#ffd700; --orb-2:#ff6b35; --accent:#ffd56b; --accent-2:#ff7b54; --glow:rgba(255,213,107,.3); }
+    [data-time="evening"]   { --bg-1:#1a0028; --bg-2:#6b1a7b; --bg-3:#b03060; --orb-1:#f9a8d4; --orb-2:#fbbf24; --accent:#f0abdc; --accent-2:#fbbf24; --glow:rgba(240,171,220,.3); }
+    [data-time="night"]     { --bg-1:#050510; --bg-2:#0f0c29; --bg-3:#302b63; --orb-1:#818cf8; --orb-2:#c084fc; --accent:#818cf8; --accent-2:#c084fc; --glow:rgba(129,140,248,.28); }
+
+    html { scroll-behavior:smooth; }
+    body { font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif; min-height:100vh; background:linear-gradient(140deg,var(--bg-1) 0%,var(--bg-2) 55%,var(--bg-3) 100%); color:var(--text-1); overflow-x:hidden; transition:background 1.2s var(--ease); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+
+    .orb { position:fixed; border-radius:50%; filter:blur(90px); opacity:.35; pointer-events:none; z-index:0; transition:background 1.2s; }
+    .orb-1 { width:700px; height:700px; background:var(--orb-1); top:-250px; right:-250px; animation:drift 9s ease-in-out infinite; }
+    .orb-2 { width:500px; height:500px; background:var(--orb-2); bottom:-150px; left:-150px; animation:drift 12s ease-in-out infinite reverse; }
+    @keyframes drift { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(40px,-40px) scale(1.08)} }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    /* ── Screens ── */
+    .screen { display:none; position:relative; z-index:1; }
+    .screen.active { display:block; animation:fadeInUp .45s var(--ease) both; }
+
+    /* ── Loading + creature dance ── */
+    .loading-overlay { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.55); backdrop-filter:blur(10px); align-items:center; justify-content:center; flex-direction:column; gap:22px; }
+    .loading-overlay.active { display:flex; }
+    .loading-creature { position:relative; width:120px; height:120px; filter:drop-shadow(0 0 28px var(--glow)); }
+    .loading-creature svg { width:100%; height:100%; display:block; }
+    .creature-notes { position:absolute; inset:-8px; pointer-events:none; }
+    .creature-note { position:absolute; font-size:1.1rem; opacity:.9; color:var(--accent); animation:noteFloat 2.8s ease-in-out infinite; }
+    .creature-note.n1 { top:12%; left:8%; animation-delay:0s; }
+    .creature-note.n2 { top:8%; right:15%; animation-delay:.4s; }
+    .creature-note.n3 { bottom:15%; left:12%; animation-delay:.8s; }
+    .creature-note.n4 { bottom:10%; right:8%; animation-delay:1.2s; }
+    @keyframes noteFloat { 0%,100%{transform:translateY(0) scale(1); opacity:.85} 50%{transform:translateY(-6px) scale(1.15); opacity:1} }
+    .loading-text { font-family:'Playfair Display',serif; font-style:italic; font-size:1.15rem; color:var(--text-1); font-weight:500; }
+    @keyframes animBounce { 0%,100%{transform:scale(1) translateY(0)} 25%{transform:scale(1.12) translateY(-14px)} 50%{transform:scale(0.98) translateY(2px)} 75%{transform:scale(1.08) translateY(-10px)} }
+    @keyframes animSway { 0%,100%{transform:rotate(-6deg) translateY(0)} 50%{transform:rotate(8deg) translateY(-4px)} }
+    @keyframes animShake { 0%,100%{transform:translateX(0) rotate(0)} 25%{transform:translateX(-10px) rotate(-8deg)} 75%{transform:translateX(10px) rotate(8deg)} }
+    @keyframes animFloat { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-18px) scale(1.06)} }
+    @keyframes animJitter { 0%,100%{transform:translate(0,0)} 20%{transform:translate(5px,-4px)} 40%{transform:translate(-4px,5px)} 60%{transform:translate(4px,4px)} 80%{transform:translate(-5px,-3px)} }
+    @keyframes animSwoon { 0%,100%{transform:rotate(-5deg) scale(1)} 33%{transform:rotate(6deg) scale(1.06)} 66%{transform:rotate(-3deg) scale(1.02)} }
+    @keyframes animSwaySlow { 0%,100%{transform:translateX(-8px) rotate(-5deg)} 50%{transform:translateX(8px) rotate(5deg)} }
+    @keyframes animWiggle { 0%,100%{transform:rotate(-12deg) scale(1)} 25%{transform:rotate(10deg) scale(1.05)} 50%{transform:rotate(-8deg) scale(0.98)} 75%{transform:rotate(12deg) scale(1.04)} }
+    @keyframes animHop { 0%,100%{transform:translateY(0) scale(1)} 30%{transform:translateY(-20px) scale(1.08)} 60%{transform:translateY(-8px) scale(1.02)} }
+    @keyframes animSpin { 0%{transform:rotate(0) scale(1)} 50%{transform:rotate(15deg) scale(1.08)} 100%{transform:rotate(0) scale(1)} }
+    @keyframes animPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    @keyframes animNod { 0%,100%{transform:translateY(0) rotate(0)} 25%{transform:translateY(-6px) rotate(-4deg)} 75%{transform:translateY(-2px) rotate(4deg)} }
+    @keyframes animDrift { 0%,100%{transform:translate(0,0)} 33%{transform:translate(6px,-8px)} 66%{transform:translate(-4px,-4px)} }
+    @keyframes animPeek { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-12px) scale(1.04)} }
+    .creature-bounce { animation:animBounce 3.2s ease-in-out infinite; }
+    .creature-sway { animation:animSway 3.5s ease-in-out infinite; }
+    .creature-shake { animation:animShake 3s ease-in-out infinite; }
+    .creature-float { animation:animFloat 3.6s ease-in-out infinite; }
+    .creature-jitter { animation:animJitter 3.2s ease-in-out infinite; }
+    .creature-swoon { animation:animSwoon 3.4s ease-in-out infinite; }
+    .creature-sway-slow { animation:animSwaySlow 3.6s ease-in-out infinite; }
+    .creature-wiggle { animation:animWiggle 3s ease-in-out infinite; }
+    .creature-hop { animation:animHop 2.8s ease-in-out infinite; }
+    .creature-spin { animation:animSpin 3.2s ease-in-out infinite; }
+    .creature-pulse { animation:animPulse 2.6s ease-in-out infinite; }
+    .creature-nod { animation:animNod 3.4s ease-in-out infinite; }
+    .creature-drift { animation:animDrift 3.6s ease-in-out infinite; }
+    .creature-peek { animation:animPeek 3s ease-in-out infinite; }
+
+    /* ── Auth ── */
+    .auth-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+    .auth-card { background:var(--glass); border:1px solid var(--glass-border); border-radius:28px; backdrop-filter:blur(24px); padding:48px 40px; max-width:440px; width:100%; text-align:center; box-shadow:0 24px 64px rgba(0,0,0,.4); }
+    .auth-vinyl { width:64px; height:64px; margin:0 auto 20px; animation:spin 9s linear infinite; filter:drop-shadow(0 0 16px var(--glow)); }
+    .auth-card h1 { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:700; letter-spacing:-.02em; margin-bottom:8px; background:linear-gradient(135deg,var(--text-1) 30%,var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .auth-sub { font-size:.9rem; color:var(--text-2); font-weight:500; letter-spacing:.03em; }
+    .auth-form { display:flex; flex-direction:column; gap:12px; margin:28px 0 24px; }
+    .auth-input { width:100%; padding:16px 20px; background:rgba(255,255,255,.08); border:1px solid var(--glass-border); border-radius:14px; color:var(--text-1); font-family:inherit; font-size:1rem; outline:none; transition:all .25s; }
+    .auth-input:focus { border-color:var(--accent); background:rgba(255,255,255,.12); box-shadow:0 0 0 3px var(--glow); }
+    .auth-input::placeholder { color:var(--text-3); }
+    .auth-btn { width:100%; padding:16px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; border-radius:14px; color:#fff; font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer; transition:all .3s var(--ease); box-shadow:0 8px 24px var(--glow); }
+    .auth-btn:hover { box-shadow:0 14px 32px var(--glow); filter:brightness(1.08); }
+    .auth-divider { font-size:.7rem; color:var(--text-3); letter-spacing:.12em; text-transform:uppercase; margin-bottom:12px; }
+    .user-chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+    .user-chip { display:flex; align-items:center; gap:8px; padding:8px 16px; background:var(--glass); border:1px solid rgba(255,255,255,.22); border-radius:999px; color:var(--text-1); font-family:inherit; font-size:.82rem; font-weight:600; cursor:pointer; transition:all .25s; }
+    .user-chip:hover { background:rgba(255,255,255,.14); border-color:var(--accent); color:var(--text-1); }
+    .chip-avatar { width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:700; color:#fff; flex-shrink:0; }
+
+    /* ── Onboarding ── */
+    .ob-wrap { max-width:940px; margin:0 auto; padding:40px 24px 80px; }
+    .progress-bar { display:flex; gap:6px; margin-bottom:40px; }
+    .progress-step { flex:1; height:4px; background:var(--glass-border); border-radius:2px; transition:background .5s; }
+    .progress-step.done { background:var(--accent); }
+    .ob-header { margin-bottom:32px; }
+    .ob-title { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,4vw,2.6rem); font-weight:700; margin-bottom:10px; }
+    .ob-sub { color:var(--text-2); font-size:.95rem; line-height:1.6; font-weight:500; }
+    .ob-footer { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:32px; padding-top:24px; border-top:1px solid var(--glass-border); }
+    .ob-btn { padding:16px 36px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; border-radius:16px; color:#fff; font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer; letter-spacing:.02em; transition:all .3s var(--ease); box-shadow:0 8px 28px var(--glow); }
+    .ob-btn:hover { box-shadow:0 14px 36px var(--glow); filter:brightness(1.08); }
+    .ob-btn:disabled { opacity:.35; cursor:not-allowed; transform:none; box-shadow:none; }
+    .ob-skip { background:transparent; border:none; color:var(--text-2); font-family:inherit; font-size:.85rem; font-weight:600; cursor:pointer; padding:8px 16px; border-radius:8px; transition:all .2s; }
+    .ob-skip:hover { color:var(--accent); background:rgba(255,255,255,.08); }
+    .ob-hint { font-size:.78rem; color:var(--text-3); margin-top:14px; text-align:center; }
+    .ob-count { color:var(--accent); font-weight:700; }
+
+    /* ── Genre Grid ── */
+    .genre-grid { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:8px; }
+    .genre-pill { display:flex; align-items:center; gap:7px; padding:10px 18px; background:var(--glass); border:1px solid rgba(255,255,255,.22); border-radius:999px; color:var(--text-1); font-family:inherit; font-size:.82rem; font-weight:600; cursor:pointer; backdrop-filter:blur(12px); transition:all .25s var(--ease); }
+    .genre-pill:hover { background:rgba(255,255,255,.14); border-color:var(--accent); color:var(--text-1); }
+    .genre-pill.selected { background:linear-gradient(135deg,rgba(167,139,250,.28),rgba(244,114,182,.18)); border-color:var(--accent); color:var(--text-1); box-shadow:0 0 14px var(--glow); }
+    [data-time="morning"]   .genre-pill.selected { background:linear-gradient(135deg,rgba(72,219,251,.28),rgba(168,224,99,.18)); }
+    [data-time="afternoon"] .genre-pill.selected { background:linear-gradient(135deg,rgba(255,213,107,.28),rgba(255,123,84,.18)); }
+    [data-time="evening"]   .genre-pill.selected { background:linear-gradient(135deg,rgba(240,171,220,.28),rgba(251,191,36,.18)); }
+
+    /* ── Quiz ── */
+    .quiz-page-label { font-size:.7rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); margin-bottom:6px; }
+    .quiz-instructions { font-size:.82rem; color:var(--text-3); margin-bottom:20px; display:flex; gap:16px; }
+    .quiz-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:8px; }
+    .quiz-card { border-radius:14px; overflow:hidden; background:var(--glass); border:1.5px solid var(--glass-border); transition:all .3s var(--ease); position:relative; }
+    .quiz-card-art { aspect-ratio:1; background:var(--bg-2); position:relative; overflow:hidden; }
+    .quiz-card-art img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; transition:transform .4s; }
+    .quiz-card-art img.loaded { display:block; }
+    .quiz-card:hover .quiz-card-art img.loaded { transform:scale(1.06); }
+    .quiz-art-ph { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:2.2rem; background:linear-gradient(135deg,var(--bg-2),var(--bg-3)); }
+    .quiz-card-btns { position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; padding:7px; background:linear-gradient(to bottom,rgba(0,0,0,.55),transparent); opacity:0; transition:opacity .2s; }
+    .quiz-card:hover .quiz-card-btns, .quiz-card.liked .quiz-card-btns, .quiz-card.disliked .quiz-card-btns { opacity:1; }
+    .qbtn { width:28px; height:28px; border-radius:50%; border:1px solid rgba(255,255,255,.25); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.9rem; font-weight:700; backdrop-filter:blur(4px); transition:all .2s; background:rgba(255,255,255,.15); color:var(--text-1); }
+    .qbtn:hover { background:rgba(255,255,255,.25); }
+    .qbtn-like:hover { background:rgba(239,68,68,.8); color:#fff; }
+    .qbtn-x:hover { background:rgba(100,116,139,.8); color:#fff; }
+    .quiz-card.liked { border-color:var(--red); box-shadow:0 0 18px rgba(239,68,68,.3); }
+    .quiz-card.liked .qbtn-like { background:var(--red); color:#fff; }
+    .quiz-card.disliked { opacity:.32; filter:grayscale(.6); }
+    .quiz-card.disliked .qbtn-x { background:rgba(100,116,139,.9); color:#fff; }
+    .quiz-card-meta { padding:9px 10px 11px; }
+    .quiz-card-title { font-size:.72rem; font-weight:700; color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .quiz-card-artist { font-size:.65rem; color:var(--text-3); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    /* ── Main App ── */
+    .container { position:relative; z-index:1; max-width:920px; margin:0 auto; padding:32px 24px 100px; }
+    .user-bar { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--glass); border:1px solid var(--glass-border); border-radius:18px; backdrop-filter:blur(14px); margin-bottom:36px; gap:12px; flex-wrap:wrap; }
+    .user-identity { display:flex; align-items:center; gap:10px; }
+    .user-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.85rem; color:#fff; text-transform:uppercase; flex-shrink:0; }
+    .user-name { font-weight:600; font-size:.88rem; color:var(--text-1); }
+    .user-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .my-albums-btn { display:flex; align-items:center; gap:7px; padding:8px 15px; background:transparent; border:1px solid rgba(255,255,255,.25); border-radius:10px; color:var(--text-1); font-family:inherit; font-size:.78rem; font-weight:700; cursor:pointer; transition:all .25s; }
+    .my-albums-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(255,255,255,.1); }
+    .saved-badge { background:var(--accent); color:#fff; border-radius:999px; padding:1px 7px; font-size:.65rem; font-weight:700; min-width:18px; text-align:center; display:none; }
+    .settings-btn { display:flex; align-items:center; gap:6px; padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,.25); border-radius:10px; color:var(--text-2); font-family:inherit; font-size:.78rem; font-weight:600; cursor:pointer; transition:all .25s; }
+    .settings-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(255,255,255,.08); }
+    .settings-btn.spotify-on { border-color:#1db954; color:#1db954; }
+    .spotify-dot { width:7px; height:7px; border-radius:50%; background:#1db954; display:none; }
+    .settings-btn.spotify-on .spotify-dot { display:inline-block; animation:pulse 2s ease-in-out infinite; }
+    .logout-btn { padding:7px 12px; background:transparent; border:1px solid transparent; border-radius:9px; color:var(--text-2); font-family:inherit; font-size:.75rem; font-weight:600; cursor:pointer; transition:all .25s; }
+    .logout-btn:hover { color:var(--accent); }
+
+    .header { text-align:center; margin-bottom:48px; }
+    .vinyl-wrap { display:inline-block; margin-bottom:20px; }
+    .vinyl { width:68px; height:68px; animation:spin 9s linear infinite; filter:drop-shadow(0 0 18px var(--glow)); }
+    .header h1 { font-family:'Playfair Display',serif; font-size:clamp(2.2rem,6vw,3.8rem); font-weight:700; letter-spacing:-.025em; line-height:1.1; margin-bottom:10px; background:linear-gradient(135deg,var(--text-1) 30%,var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; transition:background 1.2s; }
+    .header p { font-size:.98rem; color:var(--text-2); font-weight:500; letter-spacing:.03em; }
+
+    .section { margin-bottom:40px; }
+    .section-label { font-size:.68rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin-bottom:14px; transition:color 1.2s; }
+    .section-sub { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:600; color:var(--text-1); margin-bottom:18px; text-shadow:0 1px 2px rgba(0,0,0,.3); }
+    .divider { height:1px; background:var(--glass-border); margin:40px 0; }
+
+    .time-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .time-btn { padding:18px 8px 14px; background:var(--glass); border:1px solid rgba(255,255,255,.22); border-radius:18px; cursor:pointer; text-align:center; backdrop-filter:blur(14px); color:var(--text-1); font-family:inherit; font-size:.8rem; font-weight:600; transition:all .3s var(--ease); }
+    .time-btn:hover { background:rgba(255,255,255,.14); border-color:var(--accent); color:var(--text-1); }
+    .time-btn.active { background:linear-gradient(135deg,rgba(167,139,250,.22),rgba(244,114,182,.14)); border-color:var(--accent); color:var(--text-1); box-shadow:0 0 28px var(--glow); }
+    [data-time="morning"]   .time-btn.active { background:linear-gradient(135deg,rgba(72,219,251,.22),rgba(168,224,99,.14)); }
+    [data-time="afternoon"] .time-btn.active { background:linear-gradient(135deg,rgba(255,213,107,.22),rgba(255,123,84,.14)); }
+    [data-time="evening"]   .time-btn.active { background:linear-gradient(135deg,rgba(240,171,220,.22),rgba(251,191,36,.14)); }
+    .time-emoji { display:block; font-size:1.85rem; margin-bottom:7px; }
+    .time-name  { display:block; font-weight:700; font-size:.82rem; }
+    .time-range { display:block; font-size:.67rem; opacity:.55; margin-top:3px; }
+
+    .mood-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:10px; }
+    .mood-btn { padding:15px 10px 12px; background:var(--glass); border:1px solid rgba(255,255,255,.22); border-radius:16px; cursor:pointer; text-align:center; backdrop-filter:blur(14px); color:var(--text-1); font-family:inherit; font-size:.76rem; font-weight:600; transition:all .28s var(--ease); user-select:none; }
+    .mood-btn:hover { background:rgba(255,255,255,.14); border-color:var(--accent); color:var(--text-1); }
+    .mood-btn.selected { background:linear-gradient(135deg,rgba(167,139,250,.28),rgba(244,114,182,.18)); border-color:var(--accent); color:var(--text-1); box-shadow:0 0 22px var(--glow); }
+    [data-time="morning"]   .mood-btn.selected { background:linear-gradient(135deg,rgba(72,219,251,.28),rgba(168,224,99,.18)); }
+    [data-time="afternoon"] .mood-btn.selected { background:linear-gradient(135deg,rgba(255,213,107,.28),rgba(255,123,84,.18)); }
+    [data-time="evening"]   .mood-btn.selected { background:linear-gradient(135deg,rgba(240,171,220,.28),rgba(251,191,36,.18)); }
+    .mood-emoji { display:block; font-size:1.75rem; margin-bottom:6px; }
+    .mood-name  { display:block; font-weight:600; }
+    .selection-hint { margin-top:14px; font-size:.78rem; color:var(--text-3); text-align:center; }
+    .mood-count { color:var(--accent); font-weight:700; }
+
+    .generate-btn { width:100%; padding:22px 40px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; border-radius:20px; color:#fff; font-family:inherit; font-size:1.06rem; font-weight:700; letter-spacing:.04em; cursor:pointer; position:relative; overflow:hidden; box-shadow:0 10px 40px var(--glow); transition:all .3s var(--ease); }
+    .generate-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--accent-2),var(--accent)); opacity:0; transition:opacity .3s; }
+    .generate-btn:hover::before { opacity:1; }
+    .generate-btn:hover { box-shadow:0 18px 50px var(--glow); filter:brightness(1.08); }
+    .generate-btn:disabled { opacity:.35; cursor:not-allowed; transform:none; box-shadow:none; }
+    .generate-btn span { position:relative; z-index:1; }
+
+    /* ── New Releases (Spotify) ── */
+    .nr-section { display:none; margin-bottom:40px; }
+    .nr-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .nr-header .section-label { margin-bottom:0; }
+    .nr-spotify-badge { display:flex; align-items:center; gap:5px; font-size:.65rem; font-weight:700; color:#1db954; letter-spacing:.05em; text-transform:uppercase; }
+    .nr-scroll { display:flex; gap:12px; overflow-x:auto; padding-bottom:8px; scrollbar-width:none; }
+    .nr-scroll::-webkit-scrollbar { display:none; }
+    .nr-card { flex-shrink:0; width:130px; text-decoration:none; color:inherit; transition:all .25s var(--ease); border-radius:12px; padding:4px; margin:-4px; }
+    .nr-card:hover { background:rgba(255,255,255,.08); }
+    .nr-art { width:130px; height:130px; border-radius:12px; object-fit:cover; display:block; background:var(--bg-2); margin-bottom:8px; }
+    .nr-title { font-size:.75rem; font-weight:700; color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .nr-artist { font-size:.68rem; color:var(--text-3); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    /* ── Album Result ── */
+    .album-result { margin-top:52px; opacity:0; transform:translateY(36px); transition:opacity .65s var(--ease),transform .65s var(--ease); display:none; }
+    .album-result.visible { opacity:1; transform:translateY(0); }
+    .result-label { text-align:center; font-size:.68rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin-bottom:20px; }
+    .album-card { background:var(--glass); border:1px solid var(--glass-border); border-radius:28px; backdrop-filter:blur(24px); overflow:hidden; box-shadow:0 28px 70px rgba(0,0,0,.45); }
+    .album-card-inner { display:grid; grid-template-columns:300px 1fr; min-height:340px; }
+    .album-art-panel { position:relative; overflow:hidden; background:var(--bg-2); min-height:300px; }
+    .album-art { width:100%; height:100%; object-fit:cover; display:none; transition:transform .6s var(--ease); }
+    .album-art.loaded { display:block; }
+    .album-art:hover { transform:scale(1.04); }
+    .album-placeholder { width:100%; height:100%; min-height:300px; display:flex; align-items:center; justify-content:center; font-size:5.5rem; }
+    .album-info { padding:36px 36px 32px; display:flex; flex-direction:column; justify-content:space-between; gap:20px; }
+    .album-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
+    .tag { padding:4px 12px; background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.14); border-radius:999px; font-size:.64rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--accent); }
+    .tag.spotify-tag { background:rgba(29,185,84,.15); border-color:rgba(29,185,84,.3); color:#1db954; }
+    .album-title { font-family:'Playfair Display',serif; font-size:clamp(1.45rem,3vw,2rem); font-weight:700; line-height:1.2; color:var(--text-1); margin-bottom:6px; }
+    .album-artist { font-size:.93rem; color:var(--text-2); font-weight:400; margin-bottom:18px; }
+    .album-vibe { font-family:'Playfair Display',serif; font-style:italic; font-size:.88rem; color:var(--text-2); line-height:1.75; padding:14px 16px; background:rgba(255,255,255,.05); border-left:2.5px solid var(--accent); border-radius:0 10px 10px 0; margin-bottom:14px; transition:border-color 1.2s; }
+    .album-why { font-size:.8rem; color:var(--text-3); line-height:1.65; margin-bottom:6px; }
+    .spotify-embed-wrap { padding:0 24px 20px; border-top:1px solid var(--glass-border); margin-top:4px; padding-top:20px; }
+    .spotify-embed-wrap iframe { width:100%; height:152px; border-radius:12px; border:none; }
+    .album-actions { display:flex; gap:10px; flex-wrap:wrap; padding-top:4px; }
+    .btn-primary { padding:11px 22px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; border-radius:12px; color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:7px; transition:all .28s var(--ease); }
+    .btn-primary:hover { box-shadow:0 8px 26px var(--glow); filter:brightness(1.08); }
+    .btn-secondary { padding:11px 22px; background:transparent; border:1px solid rgba(255,255,255,.28); border-radius:12px; color:var(--text-1); font-family:inherit; font-size:.82rem; font-weight:600; cursor:pointer; transition:all .28s var(--ease); }
+    .btn-secondary:hover { background:rgba(255,255,255,.12); border-color:var(--accent); color:var(--accent); }
+    .btn-save { padding:11px 22px; background:transparent; border:1px solid rgba(255,255,255,.28); border-radius:12px; color:var(--text-1); font-family:inherit; font-size:.82rem; font-weight:600; cursor:pointer; display:none; align-items:center; gap:6px; transition:all .28s var(--ease); }
+    .btn-save:hover { border-color:var(--red); color:var(--red); background:rgba(239,68,68,.1); }
+    .btn-save.saved { background:rgba(239,68,68,.15); border-color:var(--red); color:var(--red); }
+
+    /* ── Modals ── */
+    .modal { display:none; position:fixed; inset:0; z-index:400; align-items:center; justify-content:center; padding:20px; }
+    .modal.active { display:flex; }
+    .modal-overlay { position:absolute; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(10px); cursor:pointer; }
+    .modal-panel { position:relative; z-index:1; background:linear-gradient(140deg,var(--bg-1),var(--bg-2)); border:1px solid var(--glass-border); border-radius:24px; max-width:580px; width:100%; max-height:82vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 30px 80px rgba(0,0,0,.5); animation:fadeInUp .35s var(--ease) both; }
+    .modal-header { padding:22px 26px 18px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--glass-border); flex-shrink:0; }
+    .modal-header h2 { font-family:'Playfair Display',serif; font-size:1.35rem; font-weight:700; }
+    .modal-close { width:34px; height:34px; border-radius:50%; background:var(--glass); border:1px solid rgba(255,255,255,.3); color:var(--text-1); font-size:1rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+    .modal-close:hover { background:rgba(255,255,255,.15); border-color:var(--accent); color:var(--accent); }
+    .modal-body { overflow-y:auto; padding:20px 24px 28px; flex:1; }
+
+    /* Saved list */
+    .saved-empty { text-align:center; padding:48px 20px; color:var(--text-3); font-style:italic; font-family:'Playfair Display',serif; font-size:.95rem; line-height:1.7; }
+    .saved-item { display:grid; grid-template-columns:60px 1fr auto; gap:14px; align-items:center; padding:13px; background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; margin-bottom:10px; transition:all .25s; }
+    .saved-item:hover { background:rgba(255,255,255,.1); }
+    .saved-art { width:60px; height:60px; border-radius:9px; object-fit:cover; background:var(--bg-2); }
+    .saved-art-ph { width:60px; height:60px; border-radius:9px; background:linear-gradient(135deg,var(--bg-2),var(--bg-3)); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+    .saved-info { overflow:hidden; }
+    .saved-title { font-weight:700; font-size:.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .saved-artist { font-size:.76rem; color:var(--text-2); margin-top:2px; }
+    .saved-genre { font-size:.63rem; color:var(--accent); margin-top:4px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+    .saved-remove { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.25); color:var(--text-2); font-weight:700; cursor:pointer; font-size:.85rem; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+    .saved-remove:hover { background:rgba(239,68,68,.2); border-color:var(--red); color:var(--red); }
+
+    /* Settings modal */
+    .settings-section { margin-bottom:28px; }
+    .settings-section h3 { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+    .settings-desc { font-size:.82rem; color:var(--text-2); line-height:1.65; margin-bottom:16px; }
+    .settings-desc a { color:var(--accent); text-decoration:none; font-weight:600; }
+    .settings-desc a:hover { text-decoration:underline; }
+    .settings-field { margin-bottom:12px; }
+    .settings-field label { display:block; font-size:.72rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-3); margin-bottom:6px; }
+    .settings-input { width:100%; padding:13px 16px; background:rgba(255,255,255,.08); border:1px solid var(--glass-border); border-radius:12px; color:var(--text-1); font-family:'Courier New',monospace; font-size:.82rem; outline:none; transition:all .25s; }
+    .settings-input:focus { border-color:var(--accent); background:rgba(255,255,255,.12); box-shadow:0 0 0 3px var(--glow); }
+    .settings-input::placeholder { color:var(--text-3); font-family:inherit; }
+    .settings-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:16px; }
+    .settings-save-btn { padding:12px 24px; background:linear-gradient(135deg,#1db954,#1ed760); border:none; border-radius:12px; color:#000; font-family:inherit; font-size:.85rem; font-weight:700; cursor:pointer; transition:all .28s var(--ease); }
+    .settings-save-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(29,185,84,.35); }
+    .settings-clear-btn { padding:12px 20px; background:transparent; border:1px solid rgba(255,255,255,.28); border-radius:12px; color:var(--text-2); font-family:inherit; font-size:.82rem; font-weight:600; cursor:pointer; transition:all .25s; }
+    .settings-clear-btn:hover { border-color:var(--red); color:var(--red); background:rgba(239,68,68,.1); }
+    .spotify-status { display:flex; align-items:center; gap:8px; font-size:.78rem; padding:10px 16px; border-radius:10px; }
+    .spotify-status.connected { background:rgba(29,185,84,.12); border:1px solid rgba(29,185,84,.3); color:#1db954; }
+    .spotify-status.disconnected { background:rgba(255,255,255,.05); border:1px solid var(--glass-border); color:var(--text-3); }
+    .status-dot { width:8px; height:8px; border-radius:50%; background:currentColor; flex-shrink:0; }
+    .settings-divider { height:1px; background:var(--glass-border); margin:24px 0; }
+    .data-note { font-size:.76rem; color:var(--text-3); line-height:1.6; padding:14px 16px; background:rgba(255,255,255,.04); border-radius:10px; border:1px solid var(--glass-border); }
+
+    /* ── Guest button ── */
+    .auth-or { display:flex; align-items:center; gap:10px; margin:6px 0; }
+    .auth-or-line { flex:1; height:1px; background:rgba(255,255,255,.1); }
+    .auth-or-text { font-size:.68rem; color:var(--text-3); letter-spacing:.08em; text-transform:uppercase; }
+    .auth-guest-btn { width:100%; padding:14px 20px; background:transparent; border:1px solid rgba(255,255,255,.25); border-radius:14px; color:var(--text-2); font-family:inherit; font-size:.88rem; font-weight:600; cursor:pointer; transition:all .25s var(--ease); }
+    .auth-guest-btn:hover { border-color:var(--accent); color:var(--text-1); background:rgba(255,255,255,.08); }
+
+    /* ── Expand moods toggle ── */
+    .expand-moods-wrap { margin-top:12px; text-align:center; }
+    .expand-moods-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 18px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.25); border-radius:999px; color:var(--text-2); font-family:inherit; font-size:.76rem; font-weight:600; cursor:pointer; transition:all .28s var(--ease); }
+    .expand-moods-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(255,255,255,.1); }
+    .expand-icon { display:inline-block; transition:transform .3s var(--ease); font-style:normal; }
+    .expand-icon.open { transform:rotate(180deg); }
+    .nuanced-section { margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,255,255,.08); }
+    .nuanced-label { font-size:.65rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--text-3); margin-bottom:10px; }
+
+    /* ── Song list / Track hearts ── */
+    .track-list { margin-top:24px; margin-bottom:28px; }
+    .track-list-header { font-size:.68rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); margin-bottom:12px; }
+    .track-list-ul { list-style:none; }
+    .track-list-li { display:flex; flex-direction:column; padding:10px 14px; border-radius:12px; transition:background .2s; gap:0; }
+    .track-list-li .track-row { display:flex; align-items:center; gap:12px; }
+    .track-list-li:hover { background:rgba(255,255,255,.05); }
+    .track-num { font-size:.72rem; color:var(--text-3); min-width:22px; }
+    .track-name { flex:1; font-size:.88rem; color:var(--text-1); }
+    .track-heart { width:32px; height:32px; border-radius:50%; border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.05); color:var(--text-2); font-size:1rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .25s; flex-shrink:0; }
+    .track-heart:hover { border-color:var(--accent); color:var(--accent); background:rgba(129,140,248,.1); }
+    .track-heart.liked { border-color:var(--red); color:var(--red); background:rgba(239,68,68,.15); }
+    .track-heart.liked:hover { background:rgba(239,68,68,.25); }
+    .track-list-loading { font-size:.82rem; color:var(--text-3); font-style:italic; padding:16px 0; }
+    .track-name.clickable { cursor:pointer; text-decoration:underline; text-underline-offset:3px; font-weight:700; color:var(--text-1); }
+    .track-name.clickable:hover { color:var(--accent); }
+    .track-lyrics-wrap { grid-column:1/-1; padding:16px 18px; margin-top:4px; background:rgba(0,0,0,.25); border-radius:12px; border-left:3px solid var(--accent); }
+    .track-lyrics-loading { font-style:italic; color:var(--text-3); font-size:.82rem; }
+    .track-lyrics-text { font-family:'Playfair Display',Georgia,serif; font-size:.85rem; line-height:1.9; color:var(--text-2); white-space:pre-wrap; max-height:280px; overflow-y:auto; }
+    .track-lyrics-empty { color:var(--text-3); font-style:italic; font-size:.84rem; }
+    .track-genius-link { display:inline-flex; align-items:center; gap:6px; margin-top:12px; padding:8px 14px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.3); border-radius:10px; color:var(--accent); font-size:.78rem; font-weight:700; text-decoration:none; transition:all .25s; }
+    .track-genius-link:hover { background:rgba(255,255,255,.15); border-color:var(--accent); }
+
+    /* ── My Music Profile / Analytics ── */
+    .profile-mood-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; }
+    .profile-mood-card { background:var(--glass); border:1px solid var(--glass-border); border-radius:16px; padding:18px; transition:all .28s var(--ease); }
+    .profile-mood-card:hover { border-color:var(--accent); box-shadow:0 8px 28px var(--glow); }
+    .profile-mood-emoji { font-size:1.8rem; margin-bottom:6px; }
+    .profile-mood-name { font-weight:700; font-size:.88rem; color:var(--text-1); margin-bottom:4px; }
+    .profile-mood-count { font-size:.72rem; color:var(--accent); font-weight:600; }
+    .profile-mood-items { margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,.08); }
+    .profile-mood-item { font-size:.76rem; color:var(--text-2); margin-bottom:6px; padding:6px 10px; background:rgba(255,255,255,.04); border-radius:8px; }
+    .profile-mood-item strong { color:var(--text-1); }
+    .profile-empty { text-align:center; padding:48px 24px; color:var(--text-3); font-family:'Playfair Display',serif; font-style:italic; font-size:1rem; line-height:1.7; }
+    .profile-stats { display:flex; gap:20px; flex-wrap:wrap; margin-bottom:28px; }
+    .profile-stat { padding:16px 24px; background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; }
+    .profile-stat-num { font-size:1.8rem; font-weight:800; color:var(--accent); margin-bottom:2px; }
+    .profile-stat-label { font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--text-3); }
+
+    /* ── Reflection / Journal ── */
+    .journal-section { margin-top:36px; animation:fadeInUp .55s var(--ease) .1s both; }
+    .journal-card { background:var(--glass); border:1px solid var(--glass-border); border-radius:24px; backdrop-filter:blur(20px); padding:32px 36px 36px; box-shadow:0 16px 48px rgba(0,0,0,.3); }
+    .journal-eyebrow { font-size:.65rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; transition:color 1.2s; }
+    .journal-title { font-family:'Playfair Display',serif; font-size:1.35rem; font-weight:700; margin-bottom:16px; }
+    .journal-prompt-block { margin-bottom:24px; padding:16px 18px; background:rgba(255,255,255,.05); border-left:2.5px solid var(--accent); border-radius:0 12px 12px 0; transition:border-color 1.2s; }
+    .journal-prompt-intro { font-family:'Playfair Display',serif; font-style:italic; font-size:.92rem; font-weight:600; color:var(--text-1); margin-bottom:8px; }
+    .journal-prompt-body { font-size:.84rem; color:var(--text-2); line-height:1.8; }
+    .journal-fields { display:flex; flex-direction:column; gap:20px; }
+    .journal-field label { display:block; font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:6px; transition:color 1.2s; }
+    .journal-field .journal-q { font-size:.84rem; color:var(--text-2); font-style:italic; margin-bottom:8px; line-height:1.5; }
+    .journal-textarea { width:100%; min-height:86px; padding:14px 16px; background:rgba(255,255,255,.06); border:1px solid var(--glass-border); border-radius:12px; color:var(--text-1); font-family:'Playfair Display',Georgia,serif; font-size:.88rem; line-height:1.75; resize:vertical; outline:none; transition:all .25s; }
+    .journal-textarea:focus { border-color:var(--accent); background:rgba(255,255,255,.1); box-shadow:0 0 0 3px var(--glow); }
+    .journal-textarea::placeholder { color:var(--text-3); font-style:italic; }
+    .journal-save-row { display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px; flex-wrap:wrap; }
+    .journal-saved-msg { font-size:.78rem; color:var(--accent); font-style:italic; opacity:0; transition:opacity .4s; }
+    .journal-saved-msg.visible { opacity:1; }
+    .journal-save-btn { padding:11px 24px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; border-radius:11px; color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; transition:all .28s var(--ease); box-shadow:0 6px 20px var(--glow); }
+    .journal-save-btn:hover { box-shadow:0 10px 28px var(--glow); filter:brightness(1.1); }
+    @media (max-width:700px) { .journal-card { padding:22px 20px 26px; } }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:var(--glass-border); border-radius:3px; }
+
+    /* Responsive */
+    @media (max-width:700px) {
+      .quiz-grid { grid-template-columns:repeat(2,1fr); }
+      .album-card-inner { grid-template-columns:1fr; }
+      .album-art-panel { height:240px; min-height:unset; }
+      .album-info { padding:24px; }
+      .time-grid { grid-template-columns:repeat(2,1fr); }
+      .user-bar { justify-content:center; }
+      .nr-card { width:110px; }
+      .nr-art { width:110px; height:110px; }
+    }
+    @media (max-width:400px) {
+      .mood-grid { grid-template-columns:repeat(3,1fr); }
+      .auth-card { padding:36px 24px; }
+    }
+  </style>
+</head>
+<body data-time="night">
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- Loading -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-creature" id="loadingCreature">🎵</div>
+    <p class="loading-text" id="loadingText">Finding your perfect album…</p>
+  </div>
+
+  <!-- AUTH -->
+  <div id="s-auth" class="screen active">
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <svg class="auth-vinyl" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="48" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
+          <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,.07)" stroke-width="1" fill="none"/>
+          <circle cx="50" cy="50" r="34" fill="rgba(0,0,0,.55)"/>
+          <circle cx="50" cy="50" r="14" fill="rgba(255,255,255,.1)"/>
+          <circle cx="50" cy="50" r="6" fill="rgba(255,255,255,.9)"/>
+        </svg>
+        <h1>Album of the Day</h1>
+        <p class="auth-sub">Your mood. Your moment. Your music.</p>
+        <div class="auth-form">
+          <input class="auth-input" type="text" id="usernameInput"
+            placeholder="Enter your name to get started…" autocomplete="off"
+            onkeydown="if(event.key==='Enter') handleAuth()" />
+          <button class="auth-btn" onclick="handleAuth()">Get Started →</button>
+          <div class="auth-or"><div class="auth-or-line"></div><span class="auth-or-text">or</span><div class="auth-or-line"></div></div>
+          <button class="auth-guest-btn" onclick="handleGuestMode()">Explore as a Guest →</button>
+        </div>
+        <div id="existingUsersWrap" style="display:none">
+          <p class="auth-divider">or continue as</p>
+          <div class="user-chips" id="existingUserChips"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENRES -->
+  <div id="s-genres" class="screen">
+    <div class="ob-wrap">
+      <div class="progress-bar">
+        <div class="progress-step done"></div>
+        <div class="progress-step"></div>
+        <div class="progress-step"></div>
+        <div class="progress-step"></div>
+      </div>
+      <div class="ob-header">
+        <p class="quiz-page-label">Step 1 of 4 — Taste Profile</p>
+        <h2 class="ob-title">What genres move you?</h2>
+        <p class="ob-sub">Select everything you love. We use this to personalise your recommendations.</p>
+      </div>
+      <div class="genre-grid" id="genreGrid"></div>
+      <p class="ob-hint" id="genreHint">Pick at least one genre to continue</p>
+      <div class="ob-footer">
+        <span></span>
+        <button class="ob-btn" id="genreContinueBtn" onclick="saveGenresAndContinue()" disabled>Continue →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="s-quiz" class="screen">
+    <div class="ob-wrap">
+      <div class="progress-bar" id="pb-quiz">
+        <div class="progress-step done"></div>
+        <div class="progress-step"></div>
+        <div class="progress-step"></div>
+        <div class="progress-step"></div>
+      </div>
+      <div class="ob-header">
+        <p class="quiz-page-label" id="quizPageLabel">Albums · Page 1 of 3</p>
+        <h2 class="ob-title" id="quizTitle">The Timeless</h2>
+        <p class="ob-sub" id="quizSubtitle">Classics that shaped music forever</p>
+      </div>
+      <div class="quiz-instructions">
+        <span>♥ &nbsp;Heart to save a favourite</span>
+        <span>✕ &nbsp;X to never show an album</span>
+      </div>
+      <div class="quiz-grid" id="quizGrid"></div>
+      <p class="ob-hint" id="quizHint">No pressure — you can skip any page</p>
+      <div class="ob-footer">
+        <button class="ob-skip" onclick="skipQuizPage()">Skip this page →</button>
+        <button class="ob-btn" onclick="continueQuiz()">Continue →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="s-main" class="screen">
+    <div class="container">
+
+      <div class="user-bar">
+        <div class="user-identity">
+          <div class="user-avatar" id="userAvatar">?</div>
+          <span class="user-name" id="userName">Guest</span>
+        </div>
+        <div class="user-actions">
+          <button class="my-albums-btn" id="myAlbumsBtn" onclick="openSaved()">
+            ♥ &nbsp;My Albums <span class="saved-badge" id="savedBadge">0</span>
+          </button>
+          <button class="my-albums-btn" id="profileBtn" onclick="openProfile()" title="Your music by mood">
+            📊 &nbsp;My Music Profile
+          </button>
+          <button class="settings-btn" id="settingsBtn" onclick="openSettings()">
+            <span class="spotify-dot"></span>⚙ &nbsp;Settings
+          </button>
+          <button class="logout-btn" id="logoutBtn" onclick="logout()">Sign out</button>
+        </div>
+      </div>
+
+      <!-- New Releases (Spotify) -->
+      <div class="nr-section" id="nrSection">
+        <div class="nr-header">
+          <p class="section-label">New Releases</p>
+          <span class="nr-spotify-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+            via Spotify
+          </span>
+        </div>
+        <div class="nr-scroll" id="nrGrid"></div>
+        <div class="divider"></div>
+      </div>
+
+      <header class="header">
+        <div class="vinyl-wrap">
+          <svg class="vinyl" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="48" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
+            <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,.07)" stroke-width="1" fill="none"/>
+            <circle cx="50" cy="50" r="37" stroke="rgba(255,255,255,.07)" stroke-width="1" fill="none"/>
+            <circle cx="50" cy="50" r="30" stroke="rgba(255,255,255,.07)" stroke-width="1" fill="none"/>
+            <circle cx="50" cy="50" r="34" fill="rgba(0,0,0,.55)"/>
+            <circle cx="50" cy="50" r="14" fill="rgba(255,255,255,.1)"/>
+            <circle cx="50" cy="50" r="6" fill="rgba(255,255,255,.9)"/>
+          </svg>
+        </div>
+        <h1>Album of the Day</h1>
+        <p>Let your mood guide the music</p>
+      </header>
+
+      <section class="section">
+        <p class="section-label">When are you listening?</p>
+        <div class="time-grid">
+          <button class="time-btn" data-time-value="morning"   onclick="selectTime('morning')"><span class="time-emoji">🌅</span><span class="time-name">Morning</span><span class="time-range">6am–12pm</span></button>
+          <button class="time-btn" data-time-value="afternoon" onclick="selectTime('afternoon')"><span class="time-emoji">☀️</span><span class="time-name">Afternoon</span><span class="time-range">12–5pm</span></button>
+          <button class="time-btn" data-time-value="evening"   onclick="selectTime('evening')"><span class="time-emoji">🌆</span><span class="time-name">Evening</span><span class="time-range">5–9pm</span></button>
+          <button class="time-btn" data-time-value="night"     onclick="selectTime('night')"><span class="time-emoji">🌙</span><span class="time-name">Night</span><span class="time-range">9pm–6am</span></button>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section class="section">
+        <p class="section-label">How are you feeling?</p>
+        <p class="section-sub">Select all that apply</p>
+        <div class="mood-grid" id="moodGrid"></div>
+        <p class="selection-hint" id="selectionHint">Select at least one mood to continue</p>
+
+        <div class="expand-moods-wrap">
+          <button class="expand-moods-btn" id="expandMoodsBtn" onclick="toggleNuancedMoods()">
+            <em class="expand-icon" id="expandMoodsIcon">▾</em><span id="expandMoodsText">More nuanced emotions</span>
+          </button>
+        </div>
+        <div id="nuancedSection" style="display:none">
+          <div class="nuanced-section">
+            <p class="nuanced-label">Nuanced States — select any that feel right</p>
+            <div class="mood-grid" id="nuancedMoodGrid"></div>
+          </div>
+        </div>
+      </section>
+
+      <button class="generate-btn" id="generateBtn" onclick="generateAlbum()" disabled>
+        <span id="generateBtnText">✦ &nbsp;Find My Album</span>
+      </button>
+
+      <div class="album-result" id="albumResult">
+        <p class="result-label" id="resultLabel">✦ &nbsp;Your Album of the Moment &nbsp;✦</p>
+        <div class="album-card">
+          <div class="album-card-inner">
+            <div class="album-art-panel">
+              <div class="album-placeholder" id="artPlaceholder">🎵</div>
+              <img class="album-art" id="artImg" alt="Album cover"
+                onload="this.classList.add('loaded'); document.getElementById('artPlaceholder').style.display='none';"
+                onerror="this.remove();" />
+            </div>
+            <div class="album-info">
+              <div>
+                <div class="album-tags" id="albumTags"></div>
+                <h2 class="album-title" id="albumTitle"></h2>
+                <p class="album-artist" id="albumArtist"></p>
+                <p class="album-vibe" id="albumVibe"></p>
+                <p class="album-why" id="albumWhy"></p>
+              </div>
+              <div id="spotifyEmbedWrap" class="spotify-embed-wrap" style="display:none">
+                <iframe id="spotifyEmbed" title="Play album on Spotify" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+              </div>
+              <div class="album-actions">
+                <a id="spotifyBtn" class="btn-primary" href="#" target="_blank" rel="noopener">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                  Spotify
+                </a>
+                <button id="saveBtn" class="btn-save" onclick="toggleSave()">♡ Save Album</button>
+                <button class="btn-secondary" onclick="generateAlbum()">Try Another ↻</button>
+                <button class="btn-secondary" onclick="resetApp()">Start Over</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="journalSection" class="journal-section" style="display:none">
+        <div class="journal-card">
+          <p class="journal-eyebrow">✦ &nbsp;Reflect</p>
+          <h3 class="journal-title">Reflection</h3>
+
+          <div class="track-list" id="trackListSection" style="display:none">
+            <p class="track-list-header">Tracklist — click a song for lyrics · heart to save</p>
+            <ul class="track-list-ul" id="trackList"></ul>
+          </div>
+
+          <div class="journal-prompt-block">
+            <p class="journal-prompt-intro" id="journalIntro"></p>
+            <p class="journal-prompt-body" id="journalBody"></p>
+          </div>
+          <div class="journal-fields">
+            <div class="journal-field">
+              <label>Before you press play</label>
+              <p class="journal-q" id="journalQ1"></p>
+              <textarea class="journal-textarea" id="journalTA1"></textarea>
+            </div>
+            <div class="journal-field">
+              <label>After listening</label>
+              <p class="journal-q" id="journalQ2"></p>
+              <textarea class="journal-textarea" id="journalTA2"></textarea>
+            </div>
+            <div class="journal-field">
+              <label>A moment that resonated</label>
+              <p class="journal-q">Was there a song, lyric, or sound that caught you off guard? What was it trying to say?</p>
+              <textarea class="journal-textarea" id="journalTA3" placeholder="Write here…"></textarea>
+            </div>
+          </div>
+          <div class="journal-save-row">
+            <span class="journal-saved-msg" id="journalSavedMsg">Reflection saved ✓</span>
+            <button class="journal-save-btn" onclick="saveJournal()">Save Reflection</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /s-main -->
+
+  <!-- MODAL: SAVED -->
+  <div id="m-saved" class="modal">
+    <div class="modal-overlay" onclick="closeSaved()"></div>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2>♥ &nbsp;My Saved Albums</h2>
+        <button class="modal-close" onclick="closeSaved()">✕</button>
+      </div>
+      <div class="modal-body" id="savedList"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: MY MUSIC PROFILE -->
+  <div id="m-profile" class="modal">
+    <div class="modal-overlay" onclick="closeProfile()"></div>
+    <div class="modal-panel" style="max-width:720px;max-height:90vh;">
+      <div class="modal-header">
+        <h2>📊 &nbsp;My Music Profile</h2>
+        <button class="modal-close" onclick="closeProfile()">✕</button>
+      </div>
+      <div class="modal-body" id="profileBody"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: SETTINGS -->
+  <div id="m-settings" class="modal">
+    <div class="modal-overlay" onclick="closeSettings()"></div>
+    <div class="modal-panel" style="max-width:520px">
+      <div class="modal-header">
+        <h2>⚙ &nbsp;Settings</h2>
+        <button class="modal-close" onclick="closeSettings()">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <div class="settings-section">
+          <h3>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#1db954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+            Spotify Integration
+          </h3>
+          <p class="settings-desc">
+            Connect Spotify to unlock <strong>AI-powered recommendations</strong> based on your mood's audio fingerprint (energy, valence, danceability) and <strong>live new releases</strong>.<br><br>
+            Get free credentials in 5 min: <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a> → Create App → add <code>http://localhost:3000</code> as a Redirect URI.
+          </p>
+          <div id="spotifyStatusBadge" class="spotify-status disconnected">
+            <span class="status-dot"></span>
+            <span id="spotifyStatusText">Not connected</span>
+          </div>
+          <div class="settings-field" style="margin-top:16px">
+            <label>Client ID</label>
+            <input class="settings-input" type="text" id="spotifyClientId" placeholder="Paste your Client ID…" autocomplete="off" />
+          </div>
+          <div class="settings-field">
+            <label>Client Secret</label>
+            <input class="settings-input" type="password" id="spotifyClientSecret" placeholder="Paste your Client Secret…" autocomplete="off" />
+          </div>
+          <div class="settings-actions">
+            <button class="settings-save-btn" onclick="saveSpotifySettings()">Connect Spotify</button>
+            <button class="settings-clear-btn" onclick="clearSpotifySettings()">Disconnect</button>
+          </div>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <div class="data-note">
+          <strong>About the album data:</strong> The curated list contains 130+ hand-tagged albums drawn from <em>1001 Albums You Must Hear Before You Die</em> and modern critical favourites, each scored against your mood and time of day. When Spotify is connected, live recommendations replace this list and pull from Spotify's full catalogue of 100M+ tracks.
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+  /* ================================================================
+     CONSTANTS
+  ================================================================ */
+
+  const MOODS = [
+    {id:'happy',emoji:'😊',name:'Happy'},{id:'sad',emoji:'😢',name:'Sad'},
+    {id:'energetic',emoji:'⚡',name:'Energetic'},{id:'calm',emoji:'🌊',name:'Calm'},
+    {id:'romantic',emoji:'💕',name:'Romantic'},{id:'nostalgic',emoji:'🌅',name:'Nostalgic'},
+    {id:'focused',emoji:'🎯',name:'Focused'},{id:'melancholic',emoji:'🌧️',name:'Melancholic'},
+    {id:'anxious',emoji:'😰',name:'Anxious'},{id:'excited',emoji:'🎉',name:'Excited'},
+    {id:'angry',emoji:'🔥',name:'Angry'},{id:'peaceful',emoji:'🕊️',name:'Peaceful'},
+    {id:'hopeful',emoji:'🌱',name:'Hopeful'},{id:'lonely',emoji:'🫂',name:'Lonely'},
+  ];
+
+  const NUANCED_MOODS = [
+    {id:'wistful',emoji:'🍂',name:'Wistful'},{id:'bittersweet',emoji:'🍯',name:'Bittersweet'},
+    {id:'restless',emoji:'🌀',name:'Restless'},{id:'tender',emoji:'🌸',name:'Tender'},
+    {id:'overwhelmed',emoji:'😵‍💫',name:'Overwhelmed'},{id:'contemplative',emoji:'🧘',name:'Contemplative'},
+    {id:'euphoric',emoji:'🌟',name:'Euphoric'},{id:'heartbroken',emoji:'💔',name:'Heartbroken'},
+    {id:'longing',emoji:'🔭',name:'Longing'},{id:'grateful',emoji:'🙏',name:'Grateful'},
+    {id:'rebellious',emoji:'✊',name:'Rebellious'},{id:'dreamy',emoji:'☁️',name:'Dreamy'},
+    {id:'vulnerable',emoji:'🌿',name:'Vulnerable'},{id:'numb',emoji:'🌫️',name:'Numb'},
+  ];
+
+  // Maps nuanced moods → their base mood equivalents for scoring/Spotify
+  const NUANCED_MOOD_BASE_MAP = {
+    wistful:       ['nostalgic','melancholic'],
+    bittersweet:   ['happy','sad','nostalgic'],
+    restless:      ['anxious','energetic'],
+    tender:        ['romantic','calm','peaceful'],
+    overwhelmed:   ['anxious','sad'],
+    contemplative: ['focused','calm','melancholic'],
+    euphoric:      ['happy','excited','energetic'],
+    heartbroken:   ['sad','melancholic'],
+    longing:       ['nostalgic','melancholic','romantic'],
+    grateful:      ['happy','peaceful','calm'],
+    rebellious:    ['angry','energetic'],
+    dreamy:        ['calm','romantic','nostalgic'],
+    vulnerable:    ['sad','calm','melancholic'],
+    numb:          ['melancholic','calm'],
+  };
+
+  function allMoods() { return [...MOODS, ...NUANCED_MOODS]; }
+  function expandMoods(moodIds) {
+    const base=new Set();
+    moodIds.forEach(id=>{ if(MOOD_AUDIO[id]){base.add(id);}else if(NUANCED_MOOD_BASE_MAP[id]){NUANCED_MOOD_BASE_MAP[id].forEach(m=>base.add(m));} });
+    if(!base.size) moodIds.forEach(id=>base.add(id));
+    return [...base];
+  }
+
+  const MOOD_PHRASES = {
+    happy:'joyful',sad:'heavy-hearted',energetic:'full of energy',calm:'seeking calm',
+    romantic:'in a romantic mood',nostalgic:'nostalgic',focused:'needing focus',
+    melancholic:'melancholic',anxious:'a little anxious',excited:'excited',
+    angry:'fired up',peaceful:'at peace',hopeful:'hopeful',lonely:'lonely',
+    wistful:'wistful',bittersweet:'bittersweet',restless:'restless',tender:'tender-hearted',
+    overwhelmed:'overwhelmed',contemplative:'contemplative',euphoric:'euphoric',
+    heartbroken:'heartbroken',longing:'longing for something',grateful:'grateful',
+    rebellious:'rebellious',dreamy:'dreamy',vulnerable:'feeling vulnerable',numb:'feeling numb',
+  };
+
+  const TIME_PHRASES = {
+    morning:'This morning',afternoon:'This afternoon',evening:'This evening',night:'Tonight',
+  };
+
+  // Spotify audio features per mood (used for Recommendations API)
+  const MOOD_AUDIO = {
+    happy:       {target_valence:.82,target_energy:.68},
+    sad:         {target_valence:.15,target_energy:.28,target_acousticness:.6},
+    energetic:   {target_energy:.88,target_danceability:.72,min_energy:.65},
+    calm:        {target_energy:.22,target_acousticness:.7,max_energy:.4},
+    romantic:    {target_valence:.62,target_danceability:.52,target_energy:.42},
+    nostalgic:   {target_acousticness:.58,target_valence:.55,target_instrumentalness:.18},
+    focused:     {target_instrumentalness:.48,target_energy:.5,max_energy:.68},
+    melancholic: {target_valence:.18,target_acousticness:.52,max_valence:.4},
+    anxious:     {target_energy:.78,target_valence:.28,min_energy:.6},
+    excited:     {target_energy:.82,target_danceability:.8,min_danceability:.65},
+    angry:       {target_energy:.92,target_valence:.18,min_energy:.75},
+    peaceful:    {target_energy:.18,target_acousticness:.78,max_energy:.32},
+    hopeful:     {target_valence:.72,target_energy:.52,target_acousticness:.38},
+    lonely:      {target_valence:.22,target_acousticness:.65,target_energy:.28,max_energy:.45},
+  };
+
+  // Map our genre IDs → Spotify seed genre IDs
+  const SPOTIFY_GENRE_MAP = {
+    jazz:'jazz',blues:'blues',soul:'soul',rnb:'r-n-b',hiphop:'hip-hop',pop:'pop',
+    rock:'rock','classic-rock':'classic-rock',indie:'indie',alternative:'alt-rock',
+    folk:'folk','indie-folk':'folk',country:'country',electronic:'electronic',
+    house:'house',techno:'techno',ambient:'ambient','trip-hop':'trip-hop',
+    'drum-bass':'drum-and-bass',punk:'punk','post-punk':'post-punk',metal:'metal',
+    emo:'emo',funk:'funk',disco:'disco','neo-soul':'soul',
+    'singer-songwriter':'singer-songwriter',classical:'classical',reggae:'reggae',
+    world:'world-music',latin:'latin',gospel:'gospel',afrobeats:'afrobeat',
+    kpop:'k-pop',shoegaze:'shoegaze','dream-pop':'dream-pop',psychedelic:'psych-rock',
+    'new-wave':'new-wave',grunge:'grunge',progressive:'progressive-house',
+  };
+
+  const JOURNAL_PROMPTS = {
+    heavy: {
+      moods:['sad','melancholic','heartbroken','vulnerable','numb','lonely'],
+      intro:"You don't need to fix how you feel.",
+      body:"Let this album sit beside you. Sometimes music's greatest gift is making us feel less alone in something heavy. Allow yourself to be held by the sound — not to be fixed, just witnessed.",
+      q1:"Where in your body does this weight live right now?",
+      q2:"After listening — did anything shift, even slightly? What did the music say back to you?",
+    },
+    anxious: {
+      moods:['anxious','overwhelmed','restless'],
+      intro:"Before pressing play, take three slow breaths.",
+      body:"Let your exhales be longer than your inhales. This music was chosen to meet your nervous system where it is. You don't have to calm down — just let the album be a container for what you're carrying.",
+      q1:"What is underneath the restlessness right now — what might it be protecting?",
+      q2:"What, if anything, felt slightly easier or more manageable by the end?",
+    },
+    energized: {
+      moods:['angry','rebellious','energetic','excited','euphoric'],
+      intro:"This music understands the fire you're carrying.",
+      body:"Let it move through you rather than accumulate in you. Energy this alive wants expression — movement, even just swaying or tapping, helps it find its shape. Let this album be the release.",
+      q1:"What does this energy want to say or do? What's it reaching toward?",
+      q2:"How did moving through the album transform the feeling?",
+    },
+    nostalgic: {
+      moods:['nostalgic','wistful','longing','bittersweet'],
+      intro:"Nostalgia is often love with nowhere to go.",
+      body:"Let this music be the place. Follow where the memories point — sometimes they're quietly leading you toward something you haven't named yet. Let yourself go there.",
+      q1:"What are you longing for — a time, a person, a version of yourself?",
+      q2:"Did the music take you somewhere unexpected? What did you find there?",
+    },
+    contemplative: {
+      moods:['focused','contemplative','hopeful','grateful'],
+      intro:"Use this album as a thinking partner.",
+      body:"Notice what thoughts surface, what settles, what sharpens. Some albums have a way of clarifying what we already know but haven't said yet. Let the music hold the question open.",
+      q1:"What question are you sitting with today? What are you trying to understand?",
+      q2:"What became clearer — or more beautifully uncertain — by the end?",
+    },
+    tender: {
+      moods:['romantic','tender','dreamy','calm','peaceful','happy'],
+      intro:"Let yourself be open to feeling.",
+      body:"This is a soft frequency — quiet, receptive, present. You don't need to be anywhere other than exactly here. Some of the most important things happen when we allow ourselves to be still.",
+      q1:"What are you most tender about right now? What deserves your gentleness today?",
+      q2:"What did the music ask you to feel? What did it give you permission to hold?",
+    },
+  };
+
+  function getJournalContent(moods) {
+    const expanded = expandMoods([...moods]);
+    let dominant='tender', best=0;
+    for (const [cat, data] of Object.entries(JOURNAL_PROMPTS)) {
+      const score = expanded.filter(m=>data.moods.includes(m)).length;
+      if (score>best) { best=score; dominant=cat; }
+    }
+    return JOURNAL_PROMPTS[dominant];
+  }
+
+  const GENRES = [
+    {id:'jazz',emoji:'🎷',label:'Jazz'},{id:'blues',emoji:'🎸',label:'Blues'},
+    {id:'soul',emoji:'✨',label:'Soul'},{id:'rnb',emoji:'🎤',label:'R&B'},
+    {id:'hiphop',emoji:'🎧',label:'Hip-Hop'},{id:'pop',emoji:'⭐',label:'Pop'},
+    {id:'rock',emoji:'🤘',label:'Rock'},{id:'classic-rock',emoji:'🏆',label:'Classic Rock'},
+    {id:'indie',emoji:'🌿',label:'Indie'},{id:'alternative',emoji:'🔮',label:'Alternative'},
+    {id:'folk',emoji:'🪕',label:'Folk'},{id:'indie-folk',emoji:'🍂',label:'Indie Folk'},
+    {id:'country',emoji:'🤠',label:'Country'},{id:'electronic',emoji:'💻',label:'Electronic'},
+    {id:'house',emoji:'🎛️',label:'House'},{id:'techno',emoji:'🤖',label:'Techno'},
+    {id:'ambient',emoji:'🌌',label:'Ambient'},{id:'trip-hop',emoji:'🌙',label:'Trip-Hop'},
+    {id:'drum-bass',emoji:'🥁',label:'Drum & Bass'},{id:'punk',emoji:'⚡',label:'Punk'},
+    {id:'post-punk',emoji:'📺',label:'Post-Punk'},{id:'metal',emoji:'🔥',label:'Metal'},
+    {id:'emo',emoji:'🖤',label:'Emo'},{id:'funk',emoji:'🕺',label:'Funk'},
+    {id:'disco',emoji:'🪩',label:'Disco'},{id:'neo-soul',emoji:'🎹',label:'Neo-Soul'},
+    {id:'singer-songwriter',emoji:'🎵',label:'Singer-Songwriter'},
+    {id:'classical',emoji:'🎻',label:'Classical'},{id:'reggae',emoji:'🌴',label:'Reggae'},
+    {id:'world',emoji:'🌍',label:'World Music'},{id:'latin',emoji:'💃',label:'Latin'},
+    {id:'gospel',emoji:'🙏',label:'Gospel'},{id:'afrobeats',emoji:'🥁',label:'Afrobeats'},
+    {id:'kpop',emoji:'💫',label:'K-Pop'},{id:'shoegaze',emoji:'👟',label:'Shoegaze'},
+    {id:'dream-pop',emoji:'☁️',label:'Dream Pop'},{id:'psychedelic',emoji:'🌈',label:'Psychedelic'},
+    {id:'new-wave',emoji:'〰️',label:'New Wave'},{id:'grunge',emoji:'☔',label:'Grunge'},
+    {id:'progressive',emoji:'🌀',label:'Progressive Rock'},
+  ];
+
+  const QUIZ_PAGES = [
+    { title:'The Timeless', subtitle:'Classics that shaped music forever', albums:[
+      {title:'Abbey Road',artist:'The Beatles',search:'Abbey Road Beatles',genreTags:['classic-rock','pop'],moods:['happy','nostalgic','calm']},
+      {title:'Thriller',artist:'Michael Jackson',search:'Thriller Michael Jackson',genreTags:['pop','rnb','funk'],moods:['happy','energetic','excited']},
+      {title:'Rumours',artist:'Fleetwood Mac',search:'Rumours Fleetwood Mac',genreTags:['classic-rock','rock'],moods:['happy','nostalgic','melancholic']},
+      {title:'Led Zeppelin IV',artist:'Led Zeppelin',search:'Led Zeppelin IV',genreTags:['rock','classic-rock'],moods:['energetic','nostalgic']},
+      {title:"What's Going On",artist:'Marvin Gaye',search:'Whats Going On Marvin Gaye',genreTags:['soul','rnb','funk'],moods:['calm','melancholic','nostalgic']},
+      {title:'Born to Run',artist:'Bruce Springsteen',search:'Born to Run Bruce Springsteen',genreTags:['rock','classic-rock'],moods:['energetic','happy','nostalgic']},
+      {title:'Pet Sounds',artist:'The Beach Boys',search:'Pet Sounds Beach Boys',genreTags:['classic-rock','pop'],moods:['happy','nostalgic','melancholic']},
+      {title:'Purple Rain',artist:'Prince',search:'Purple Rain Prince',genreTags:['pop','rnb','rock'],moods:['romantic','energetic','happy']},
+      {title:'Tapestry',artist:'Carole King',search:'Tapestry Carole King',genreTags:['singer-songwriter','pop'],moods:['happy','nostalgic','calm']},
+      {title:'Innervisions',artist:'Stevie Wonder',search:'Innervisions Stevie Wonder',genreTags:['soul','rnb','funk'],moods:['happy','nostalgic','calm']},
+    ]},
+    { title:'The Golden Era', subtitle:"90s & 00s albums that defined generations", albums:[
+      {title:'Nevermind',artist:'Nirvana',search:'Nevermind Nirvana',genreTags:['grunge','rock'],moods:['energetic','angry','nostalgic']},
+      {title:'Illmatic',artist:'Nas',search:'Illmatic Nas',genreTags:['hiphop'],moods:['focused','nostalgic','energetic']},
+      {title:'The Miseducation of Lauryn Hill',artist:'Lauryn Hill',search:'Miseducation Lauryn Hill',genreTags:['rnb','soul','hiphop'],moods:['happy','nostalgic','melancholic']},
+      {title:'OK Computer',artist:'Radiohead',search:'OK Computer Radiohead',genreTags:['alternative','rock'],moods:['anxious','melancholic','focused']},
+      {title:'Dummy',artist:'Portishead',search:'Dummy Portishead',genreTags:['trip-hop','electronic'],moods:['romantic','melancholic','calm']},
+      {title:'Siamese Dream',artist:'The Smashing Pumpkins',search:'Siamese Dream Smashing Pumpkins',genreTags:['alternative','grunge'],moods:['melancholic','energetic','nostalgic']},
+      {title:'Odelay',artist:'Beck',search:'Odelay Beck',genreTags:['alternative','electronic'],moods:['happy','energetic','nostalgic']},
+      {title:'Enter the Wu-Tang',artist:'Wu-Tang Clan',search:'Enter the Wu-Tang 36 Chambers',genreTags:['hiphop'],moods:['energetic','focused','excited']},
+      {title:'Is This It',artist:'The Strokes',search:'Is This It Strokes',genreTags:['indie','rock'],moods:['energetic','nostalgic','excited']},
+      {title:'Blue',artist:'Joni Mitchell',search:'Blue Joni Mitchell',genreTags:['folk','singer-songwriter'],moods:['sad','melancholic','calm']},
+    ]},
+    { title:'The Modern Era', subtitle:'Defining sounds of the 2010s and beyond', albums:[
+      {title:'In Rainbows',artist:'Radiohead',search:'In Rainbows Radiohead',genreTags:['rock','alternative'],moods:['melancholic','focused','calm']},
+      {title:'Channel Orange',artist:'Frank Ocean',search:'Channel Orange Frank Ocean',genreTags:['rnb','neo-soul'],moods:['happy','calm','nostalgic','romantic']},
+      {title:'DAMN.',artist:'Kendrick Lamar',search:'DAMN Kendrick Lamar',genreTags:['hiphop'],moods:['energetic','focused','anxious']},
+      {title:'Lemonade',artist:'Beyoncé',search:'Lemonade Beyonce',genreTags:['pop','rnb'],moods:['energetic','angry','excited','happy']},
+      {title:'Random Access Memories',artist:'Daft Punk',search:'Random Access Memories Daft Punk',genreTags:['electronic','disco','funk'],moods:['happy','energetic','nostalgic']},
+      {title:'For Emma, Forever Ago',artist:'Bon Iver',search:'For Emma Forever Ago Bon Iver',genreTags:['indie-folk','folk'],moods:['sad','melancholic','calm']},
+      {title:'Blonde',artist:'Frank Ocean',search:'Blonde Frank Ocean',genreTags:['rnb','neo-soul'],moods:['romantic','melancholic','calm']},
+      {title:'Melodrama',artist:'Lorde',search:'Melodrama Lorde',genreTags:['pop','indie'],moods:['excited','happy','melancholic']},
+      {title:'Igor',artist:'Tyler, the Creator',search:'Igor Tyler the Creator',genreTags:['neo-soul','pop'],moods:['romantic','excited','melancholic']},
+      {title:'Ctrl',artist:'SZA',search:'Ctrl SZA',genreTags:['rnb','neo-soul'],moods:['happy','melancholic','nostalgic','calm']},
+    ]},
+  ];
+
+  // 130+ curated albums from 1001 Albums You Must Hear Before You Die + modern classics
+  const ALBUMS = [
+    // ── Classic / Timeless ──
+    {title:'Abbey Road',artist:'The Beatles',year:1969,genre:'Rock',genreTags:['classic-rock','pop'],moods:['happy','nostalgic','calm'],times:['morning','afternoon'],vibe:"A sun-drenched medley of life's sweetest moments — golden harmonies that feel like warmth through an open window.",search:'Abbey Road Beatles'},
+    {title:"Sgt. Pepper's Lonely Hearts Club Band",artist:'The Beatles',year:1967,genre:'Psychedelic Pop',genreTags:['classic-rock','pop','psychedelic'],moods:['happy','nostalgic','excited','calm'],times:['morning','afternoon'],vibe:'A psychedelic concept album that reinvented what a record could be — playful, revolutionary, and perennially surprising.',search:'Sgt Peppers Beatles'},
+    {title:'Rumours',artist:'Fleetwood Mac',year:1977,genre:'Classic Rock',genreTags:['classic-rock','rock'],moods:['happy','nostalgic','melancholic','sad'],times:['afternoon','evening'],vibe:'Born from heartbreak but radiating irresistible warmth — the sound of complicated emotions made timeless.',search:'Rumours Fleetwood Mac'},
+    {title:'Pet Sounds',artist:'The Beach Boys',year:1966,genre:'Pop / Rock',genreTags:['classic-rock','pop','psychedelic'],moods:['happy','nostalgic','melancholic','calm'],times:['morning','afternoon'],vibe:'Lush orchestral pop that captures the bittersweet feeling of summer — warm, wistful, and impossibly beautiful.',search:'Pet Sounds Beach Boys'},
+    {title:'Graceland',artist:'Paul Simon',year:1986,genre:'World / Pop',genreTags:['world','pop','singer-songwriter'],moods:['happy','nostalgic','calm','peaceful'],times:['morning','afternoon'],vibe:'A jubilant journey through South African rhythms and American highways — music that makes you want to move and drift at once.',search:'Graceland Paul Simon'},
+    {title:'Astral Weeks',artist:'Van Morrison',year:1968,genre:'Folk / Jazz / Soul',genreTags:['folk','jazz','soul','singer-songwriter'],moods:['calm','nostalgic','peaceful','romantic'],times:['morning','evening'],vibe:'Stream-of-consciousness folk-jazz of unparalleled beauty — Van Morrison in a trance, and you along with him.',search:'Astral Weeks Van Morrison'},
+    {title:'Harvest',artist:'Neil Young',year:1972,genre:'Folk / Country',genreTags:['folk','country','singer-songwriter'],moods:['sad','nostalgic','calm','melancholic'],times:['morning','afternoon'],vibe:'Ragged country folk recorded in a barn — heartbreak and beauty in equal, perfect measure.',search:'Harvest Neil Young'},
+    {title:'Tapestry',artist:'Carole King',year:1971,genre:'Singer-Songwriter / Pop',genreTags:['singer-songwriter','pop'],moods:['happy','nostalgic','calm','melancholic'],times:['morning','afternoon'],vibe:"One of the greatest singer-songwriter albums ever made — intimate, warm, and full of songs that feel like old friends.",search:'Tapestry Carole King'},
+    {title:'Exile on Main St.',artist:'The Rolling Stones',year:1972,genre:'Rock / Blues',genreTags:['classic-rock','rock','blues'],moods:['energetic','nostalgic','happy','calm'],times:['afternoon','evening'],vibe:'A sprawling, sweat-soaked double album recorded in a basement — ragged, beautiful, and endlessly alive.',search:'Exile on Main Street Rolling Stones'},
+    {title:'The Dark Side of the Moon',artist:'Pink Floyd',year:1973,genre:'Progressive Rock',genreTags:['progressive','classic-rock','psychedelic'],moods:['focused','melancholic','calm','anxious'],times:['evening','night'],vibe:'A meditation on time, greed, and mortality wrapped in pristine studio craftsmanship — a record that lives in another dimension.',search:'Dark Side of the Moon Pink Floyd'},
+    {title:'Wish You Were Here',artist:'Pink Floyd',year:1975,genre:'Progressive Rock',genreTags:['progressive','classic-rock'],moods:['melancholic','nostalgic','sad','calm'],times:['afternoon','evening','night'],vibe:'An elegy for a lost friend and a lost mind — vast, aching, and achingly human at its core.',search:'Wish You Were Here Pink Floyd'},
+    {title:'The Rise and Fall of Ziggy Stardust',artist:'David Bowie',year:1972,genre:'Glam Rock',genreTags:['classic-rock','pop'],moods:['energetic','excited','nostalgic','happy'],times:['afternoon','evening'],vibe:'A glam rock concept album about an alien messiah — theatrical, fearless, and crackling with otherworldly electricity.',search:'Ziggy Stardust David Bowie'},
+    {title:'Heroes',artist:'David Bowie',year:1977,genre:'Art Rock',genreTags:['classic-rock','new-wave','electronic'],moods:['nostalgic','melancholic','energetic','calm'],times:['morning','afternoon','evening'],vibe:'Berlin-era Bowie at the peak of his experimental powers — the title track alone justifies every superlative ever written.',search:'Heroes David Bowie'},
+    {title:'London Calling',artist:'The Clash',year:1979,genre:'Punk / Rock',genreTags:['punk','rock','new-wave'],moods:['energetic','angry','nostalgic','excited'],times:['afternoon','evening'],vibe:'A double album of furious punk rock fused with reggae, ska, and rockabilly — the sound of a world on fire.',search:'London Calling The Clash'},
+    {title:'Marquee Moon',artist:'Television',year:1977,genre:'Post-Punk',genreTags:['post-punk','rock'],moods:['energetic','focused','nostalgic','anxious'],times:['afternoon','evening'],vibe:'Two guitars in intricate, interlocking dialogue — technically astonishing post-punk that never stops surprising you.',search:'Marquee Moon Television'},
+    {title:'Remain in Light',artist:'Talking Heads',year:1980,genre:'New Wave',genreTags:['new-wave','funk','rock'],moods:['energetic','anxious','focused','excited'],times:['afternoon','evening'],vibe:'African polyrhythms meet downtown New York art rock — restless, hypnotic, and utterly unlike anything before it.',search:'Remain in Light Talking Heads'},
+    {title:'The Joshua Tree',artist:'U2',year:1987,genre:'Rock',genreTags:['rock','alternative'],moods:['melancholic','nostalgic','calm','energetic'],times:['morning','afternoon','evening'],vibe:'Wide-screen stadium rock searching for something sacred — epic, yearning, and impossibly atmospheric.',search:'The Joshua Tree U2'},
+    {title:'Appetite for Destruction',artist:"Guns N' Roses",year:1987,genre:'Hard Rock',genreTags:['rock','metal'],moods:['energetic','angry','excited','nostalgic'],times:['afternoon','evening'],vibe:'Raw, dangerous, and recklessly alive — the most thrilling debut album in hard rock history.',search:'Appetite for Destruction Guns N Roses'},
+    {title:'Ten',artist:'Pearl Jam',year:1991,genre:'Grunge / Rock',genreTags:['grunge','rock'],moods:['melancholic','nostalgic','energetic','sad'],times:['afternoon','evening'],vibe:'Grunge with a massive heart — a voice carrying the weight of an entire generation.',search:'Ten Pearl Jam'},
+    {title:'Automatic for the People',artist:'R.E.M.',year:1992,genre:'Alternative Rock',genreTags:['alternative','rock','indie'],moods:['melancholic','nostalgic','sad','calm'],times:['morning','afternoon','evening'],vibe:'Quietly devastating alternative rock about loss, time, and the passage of everything you love.',search:'Automatic for the People REM'},
+    {title:'Disintegration',artist:'The Cure',year:1989,genre:'Post-Punk / Goth',genreTags:['post-punk','dream-pop'],moods:['melancholic','sad','calm','romantic'],times:['evening','night'],vibe:'Lush, gothic post-punk that wraps heartache in orchestral grandeur — eight minutes of drowning never felt so beautiful.',search:'Disintegration The Cure'},
+    // ── Jazz ──
+    {title:'Kind of Blue',artist:'Miles Davis',year:1959,genre:'Jazz',genreTags:['jazz'],moods:['calm','focused','nostalgic','peaceful'],times:['morning','afternoon','evening'],vibe:'The definitive statement in modal jazz — cool, meditative, and as spacious as a clear blue sky.',search:'Kind of Blue Miles Davis'},
+    {title:'A Love Supreme',artist:'John Coltrane',year:1965,genre:'Jazz',genreTags:['jazz'],moods:['calm','focused','romantic','peaceful'],times:['morning','evening','night'],vibe:'A four-part spiritual suite that feels like a conversation between the human and the divine.',search:'A Love Supreme John Coltrane'},
+    {title:'Giant Steps',artist:'John Coltrane',year:1960,genre:'Jazz',genreTags:['jazz'],moods:['focused','energetic','anxious'],times:['morning','afternoon'],vibe:'The album that rewrote the harmonic language of jazz — relentless, virtuosic, and impossibly fast.',search:'Giant Steps John Coltrane'},
+    {title:'Bitches Brew',artist:'Miles Davis',year:1970,genre:'Jazz / Electronic',genreTags:['jazz','electronic','psychedelic'],moods:['energetic','focused','anxious','melancholic'],times:['evening','night'],vibe:'The birth of fusion — electric, chaotic, and sprawling in ways that still feel ahead of their time.',search:'Bitches Brew Miles Davis'},
+    {title:'Time Out',artist:'The Dave Brubeck Quartet',year:1959,genre:'Jazz',genreTags:['jazz'],moods:['happy','focused','calm','peaceful'],times:['morning','afternoon'],vibe:'Jazz in odd time signatures that somehow swings with effortless grace — Take Five never gets old.',search:'Time Out Dave Brubeck'},
+    {title:'Getz/Gilberto',artist:'Stan Getz & João Gilberto',year:1964,genre:'Jazz / Bossa Nova',genreTags:['jazz','latin'],moods:['calm','romantic','happy','peaceful'],times:['afternoon','evening'],vibe:'Bossa nova and American jazz in perfect conversation — soft, sun-drenched, and endlessly cool.',search:'Getz Gilberto'},
+    {title:'In a Silent Way',artist:'Miles Davis',year:1969,genre:'Jazz / Electronic',genreTags:['jazz','electronic'],moods:['calm','focused','peaceful','melancholic'],times:['morning','night'],vibe:'Hushed and hypnotic, this proto-ambient jazz album unfolds like mist over still water.',search:'In a Silent Way Miles Davis'},
+    {title:'Music for Airports',artist:'Brian Eno',year:1978,genre:'Ambient',genreTags:['ambient','electronic'],moods:['calm','focused','peaceful'],times:['morning','night'],vibe:'Pioneering ambient music that exists to transform space — slow, breathable, luminous, and endlessly patient.',search:'Music for Airports Brian Eno'},
+    // ── Hip-Hop ──
+    {title:'Illmatic',artist:'Nas',year:1994,genre:'Hip-Hop',genreTags:['hiphop'],moods:['focused','nostalgic','energetic','melancholic'],times:['afternoon','evening','night'],vibe:'Ten tracks of New York storytelling so vivid and precise it redefined what rap could be.',search:'Illmatic Nas'},
+    {title:'The Chronic',artist:'Dr. Dre',year:1992,genre:'Hip-Hop',genreTags:['hiphop','funk'],moods:['energetic','focused','excited','nostalgic'],times:['afternoon','evening'],vibe:'G-funk immortalized on wax — laid-back, menacing, and impossibly smooth all at once.',search:'The Chronic Dr Dre'},
+    {title:'Aquemini',artist:'OutKast',year:1998,genre:'Hip-Hop',genreTags:['hiphop'],moods:['energetic','happy','nostalgic','focused'],times:['afternoon','evening'],vibe:'Southern rap at its most expansive — Andre 3000 and Big Boi reaching together for the cosmos.',search:'Aquemini Outkast'},
+    {title:'Midnight Marauders',artist:'A Tribe Called Quest',year:1993,genre:'Hip-Hop / Jazz Rap',genreTags:['hiphop','jazz'],moods:['happy','energetic','nostalgic','calm'],times:['afternoon','evening'],vibe:'Jazz samples and sharp rhymes woven into silky hip-hop perfection — warm, funny, and effortlessly cool.',search:'Midnight Marauders A Tribe Called Quest'},
+    {title:'Ready to Die',artist:'The Notorious B.I.G.',year:1994,genre:'Hip-Hop',genreTags:['hiphop'],moods:['energetic','melancholic','focused','nostalgic'],times:['afternoon','evening','night'],vibe:'New York hip-hop at its most vivid and cinematic — brilliant storytelling from the streets to the stars.',search:'Ready to Die Notorious BIG'},
+    {title:'Madvillainy',artist:'Madvillain',year:2004,genre:'Hip-Hop',genreTags:['hiphop'],moods:['focused','nostalgic','calm'],times:['afternoon','evening','night'],vibe:"DOOM's mask and Madlib's beats — abstract, eccentric, and criminally underrated hip-hop.",search:'Madvillainy Madvillain'},
+    {title:'To Pimp a Butterfly',artist:'Kendrick Lamar',year:2015,genre:'Hip-Hop / Jazz',genreTags:['hiphop','jazz','soul'],moods:['melancholic','energetic','anxious','focused'],times:['afternoon','evening','night'],vibe:'The most ambitious hip-hop album of its era — a jazz-funk odyssey through Black identity, trauma, and transcendence.',search:'To Pimp a Butterfly Kendrick Lamar'},
+    {title:'My Beautiful Dark Twisted Fantasy',artist:'Kanye West',year:2010,genre:'Hip-Hop',genreTags:['hiphop'],moods:['energetic','excited','melancholic','anxious'],times:['afternoon','evening','night'],vibe:'Maximalist hip-hop that collapses under its own grandeur in the best possible way — overloaded and magnificent.',search:'My Beautiful Dark Twisted Fantasy Kanye'},
+    {title:'Swimming',artist:'Mac Miller',year:2018,genre:'Hip-Hop / Neo-Soul',genreTags:['hiphop','neo-soul'],moods:['melancholic','calm','nostalgic','sad'],times:['evening','night'],vibe:'A deeply personal album about staying afloat — honest, melancholy, and quietly gorgeous.',search:'Swimming Mac Miller'},
+    {title:'DAMN.',artist:'Kendrick Lamar',year:2017,genre:'Hip-Hop',genreTags:['hiphop'],moods:['energetic','focused','anxious','angry'],times:['afternoon','evening','night'],vibe:'A lyrical and sonic reckoning — dense, cinematic hip-hop wrestling with sin, faith, and survival.',search:'DAMN Kendrick Lamar'},
+    {title:'The College Dropout',artist:'Kanye West',year:2004,genre:'Hip-Hop',genreTags:['hiphop'],moods:['happy','energetic','nostalgic','excited'],times:['afternoon','evening'],vibe:'Soul-sampling, self-doubting, triumphant hip-hop — funny, emotional, and brimming with restless ambition.',search:'College Dropout Kanye West'},
+    // ── Soul / R&B ──
+    {title:'Songs in the Key of Life',artist:'Stevie Wonder',year:1976,genre:'Soul / R&B',genreTags:['soul','rnb','funk'],moods:['happy','nostalgic','energetic','calm'],times:['morning','afternoon','evening'],vibe:'Two hours of unbounded Stevie Wonder genius — joyful, complex, political, and endlessly listenable.',search:'Songs in the Key of Life Stevie Wonder'},
+    {title:"What's Going On",artist:'Marvin Gaye',year:1971,genre:'Soul / R&B',genreTags:['soul','rnb','funk'],moods:['calm','melancholic','nostalgic','peaceful'],times:['morning','afternoon','evening'],vibe:'A soul masterpiece about war, poverty, and love — still one of the most relevant albums ever recorded.',search:'Whats Going On Marvin Gaye'},
+    {title:'Off the Wall',artist:'Michael Jackson',year:1979,genre:'Pop / R&B',genreTags:['pop','rnb','funk','disco'],moods:['happy','energetic','excited','nostalgic'],times:['afternoon','evening'],vibe:'Before Thriller, there was Off the Wall — Michael at his most jubilant, funky, and impossibly free.',search:'Off the Wall Michael Jackson'},
+    {title:"Sign O' the Times",artist:'Prince',year:1987,genre:'Pop / R&B / Funk',genreTags:['pop','rnb','funk'],moods:['energetic','excited','melancholic','nostalgic'],times:['afternoon','evening'],vibe:'A double album of bewildering range and mastery — Prince at the absolute height of his creative powers.',search:'Sign O The Times Prince'},
+    {title:'The Miseducation of Lauryn Hill',artist:'Lauryn Hill',year:1998,genre:'R&B / Soul',genreTags:['rnb','soul','hiphop'],moods:['happy','nostalgic','melancholic','energetic'],times:['morning','afternoon','evening'],vibe:'Raw, revolutionary soul — a singular statement on love, loss, and rebirth that feels eternally present.',search:'Miseducation Lauryn Hill'},
+    {title:'Back to Black',artist:'Amy Winehouse',year:2006,genre:'Soul / R&B',genreTags:['soul','rnb'],moods:['sad','nostalgic','melancholic','angry'],times:['evening','night'],vibe:'Retro soul drenched in heartbreak — raw, magnetic, and achingly modern despite its vintage sound.',search:'Back to Black Amy Winehouse'},
+    {title:'Diamond Life',artist:'Sade',year:1984,genre:'Soul / Jazz',genreTags:['soul','jazz','rnb'],moods:['romantic','calm','happy','peaceful'],times:['evening','night'],vibe:'Sophisticated, sensual, and irresistibly smooth — the perfect soundtrack for slow, candlelit hours.',search:'Diamond Life Sade'},
+    {title:'Ctrl',artist:'SZA',year:2017,genre:'R&B',genreTags:['rnb','neo-soul'],moods:['happy','melancholic','nostalgic','calm','romantic'],times:['afternoon','evening'],vibe:'Honest, meandering R&B that captures the vulnerable haze of early adulthood with devastating clarity.',search:'Ctrl SZA'},
+    {title:'Channel Orange',artist:'Frank Ocean',year:2012,genre:'R&B / Soul',genreTags:['rnb','neo-soul'],moods:['happy','calm','nostalgic','romantic','excited'],times:['afternoon','evening'],vibe:'Languid, sun-baked R&B that drifts like a summer afternoon — vivid characters, half-remembered feelings.',search:'Channel Orange Frank Ocean'},
+    {title:'Voodoo',artist:"D'Angelo",year:2000,genre:'Neo-Soul',genreTags:['neo-soul','rnb','funk'],moods:['romantic','calm','energetic','happy'],times:['evening','night'],vibe:'Loose, sensual, and deeply funky — neo-soul at its most hypnotic, unhurried, and intoxicating.',search:'Voodoo D Angelo'},
+    // ── Electronic / Dance ──
+    {title:'Random Access Memories',artist:'Daft Punk',year:2013,genre:'Electronic / Funk',genreTags:['electronic','disco','funk','house'],moods:['happy','energetic','nostalgic','excited'],times:['evening','night'],vibe:'A love letter to disco and human connection — warm, crafted with obsessive care, and endlessly joyful.',search:'Random Access Memories Daft Punk'},
+    {title:'Discovery',artist:'Daft Punk',year:2001,genre:'Electronic / House',genreTags:['electronic','house'],moods:['energetic','happy','nostalgic','excited'],times:['afternoon','evening'],vibe:'Pure filtered house euphoria — nostalgia for a cartoon future, assembled entirely from synthesizers and joy.',search:'Discovery Daft Punk'},
+    {title:'Homework',artist:'Daft Punk',year:1997,genre:'Electronic / House',genreTags:['electronic','house','funk'],moods:['energetic','happy','excited','nostalgic'],times:['afternoon','evening'],vibe:'The French house revolution begins here — filtered samples and relentless grooves that still pack every dance floor.',search:'Homework Daft Punk'},
+    {title:'Blue Lines',artist:'Massive Attack',year:1991,genre:'Trip-Hop',genreTags:['trip-hop','electronic','soul'],moods:['calm','romantic','melancholic','nostalgic'],times:['evening','night'],vibe:'The album that invented trip-hop — smoky, sensual, and cinematic in ways that still feel modern.',search:'Blue Lines Massive Attack'},
+    {title:'Mezzanine',artist:'Massive Attack',year:1998,genre:'Trip-Hop',genreTags:['trip-hop','electronic'],moods:['romantic','melancholic','anxious','calm'],times:['night'],vibe:'Dense and cinematic trip-hop that envelops you completely — dark, sensual, and utterly hypnotic.',search:'Mezzanine Massive Attack'},
+    {title:'Dummy',artist:'Portishead',year:1994,genre:'Trip-Hop',genreTags:['trip-hop','electronic'],moods:['romantic','melancholic','calm','anxious'],times:['evening','night'],vibe:'Noir trip-hop that sounds like a spy film scored from the inside of a broken heart.',search:'Dummy Portishead'},
+    {title:'The Fat of the Land',artist:'The Prodigy',year:1997,genre:'Electronic / Breakbeat',genreTags:['electronic','punk'],moods:['energetic','angry','excited','anxious'],times:['afternoon','evening'],vibe:'Rave culture meets industrial aggression — the most viscerally thrilling big beat album ever made.',search:'Fat of the Land Prodigy'},
+    {title:'Selected Ambient Works Vol. II',artist:'Aphex Twin',year:1994,genre:'Ambient',genreTags:['ambient','electronic'],moods:['calm','anxious','focused','peaceful'],times:['night'],vibe:'Deeply unsettling yet strangely beautiful ambient textures — mysterious, immersive, and endlessly deep.',search:'Selected Ambient Works Volume 2 Aphex Twin'},
+    {title:'Richard D. James Album',artist:'Aphex Twin',year:1996,genre:'Electronic',genreTags:['electronic','ambient'],moods:['energetic','focused','anxious','melancholic'],times:['afternoon','evening','night'],vibe:'Drill-and-bass and eerie melodies in perfect, unsettling balance — technically dazzling and deeply felt.',search:'Richard D James Album Aphex Twin'},
+    {title:'In Colour',artist:'Jamie xx',year:2015,genre:'Electronic / House',genreTags:['electronic','house'],moods:['happy','energetic','nostalgic','calm'],times:['afternoon','evening'],vibe:'Club music and longing and summer nostalgia braided together — euphoric and emotional in equal measure.',search:'In Colour Jamie xx'},
+    {title:'Homogenic',artist:'Björk',year:1997,genre:'Electronic / Art Pop',genreTags:['electronic','alternative'],moods:['melancholic','energetic','anxious','romantic'],times:['evening','night'],vibe:'Strings and beats in violent, beautiful collision — Björk channeling volcanic emotion through electronic orchestration.',search:'Homogenic Bjork'},
+    {title:'Immunity',artist:'Jon Hopkins',year:2013,genre:'Electronic',genreTags:['electronic','ambient'],moods:['calm','focused','melancholic'],times:['night'],vibe:'From delicate piano to euphoric club music and back — a complete emotional arc in a single album.',search:'Immunity Jon Hopkins'},
+    {title:'Untrue',artist:'Burial',year:2007,genre:'UK Garage / Electronic',genreTags:['electronic','ambient','trip-hop'],moods:['melancholic','calm','romantic','focused','anxious'],times:['night'],vibe:'Crackled, rain-soaked electronic music that sounds like the ghost of a city at 3 in the morning.',search:'Untrue Burial'},
+    {title:'Music Has the Right to Children',artist:'Boards of Canada',year:1998,genre:'Electronic',genreTags:['electronic','ambient'],moods:['nostalgic','calm','focused','melancholic'],times:['morning','afternoon'],vibe:'Like a half-remembered childhood dream — hazy, warm, and strangely emotional electronic music.',search:'Music Has the Right to Children Boards of Canada'},
+    {title:'Dive',artist:'Tycho',year:2011,genre:'Electronic / Ambient',genreTags:['electronic','ambient'],moods:['calm','focused','happy','peaceful'],times:['morning','afternoon'],vibe:'Sun-bleached synths and organic rhythms that feel like coasting down an open road at golden hour.',search:'Dive Tycho'},
+    {title:'Moon Safari',artist:'Air',year:1998,genre:'Electronic / Pop',genreTags:['electronic','ambient','pop'],moods:['romantic','calm','happy','nostalgic'],times:['evening','night'],vibe:'French downtempo at its most dreamy — soft synths and sighing vocals that feel like floating on warm air.',search:'Moon Safari Air'},
+    // ── Indie / Alternative ──
+    {title:'Loveless',artist:'My Bloody Valentine',year:1991,genre:'Shoegaze',genreTags:['shoegaze','dream-pop','rock'],moods:['melancholic','calm','romantic','nostalgic'],times:['evening','night'],vibe:'A fog of distorted guitars and layered voices — shoegaze that feels like floating through someone else dream.',search:'Loveless My Bloody Valentine'},
+    {title:'Doolittle',artist:'Pixies',year:1989,genre:'Alternative Rock',genreTags:['alternative','rock','indie'],moods:['energetic','anxious','excited','nostalgic'],times:['afternoon','evening'],vibe:'Surrealist pop songs with volcanic quiet-loud dynamics — the blueprint for indie rock for the next thirty years.',search:'Doolittle Pixies'},
+    {title:'Yankee Hotel Foxtrot',artist:'Wilco',year:2001,genre:'Indie Rock',genreTags:['indie','rock','alternative'],moods:['melancholic','nostalgic','calm','focused'],times:['morning','afternoon','evening'],vibe:'Fractured country-rock processed through experimental noise — deeply American, deeply strange, and deeply moving.',search:'Yankee Hotel Foxtrot Wilco'},
+    {title:'Innerspeaker',artist:'Tame Impala',year:2010,genre:'Psychedelic Rock',genreTags:['psychedelic','indie','rock'],moods:['nostalgic','calm','melancholic','focused'],times:['morning','afternoon'],vibe:'Swirling, studio-crafted psychedelic rock that sounds like a memory of a feeling — warm, hazy, and brilliant.',search:'Innerspeaker Tame Impala'},
+    {title:'Currents',artist:'Tame Impala',year:2015,genre:'Psychedelic Pop',genreTags:['psychedelic','indie','electronic','pop'],moods:['melancholic','nostalgic','calm','romantic'],times:['afternoon','evening','night'],vibe:'Psychedelia dissolving into pop — an album about change, loss, and the strange beauty of moving on.',search:'Currents Tame Impala'},
+    {title:'Fleet Foxes',artist:'Fleet Foxes',year:2008,genre:'Indie Folk',genreTags:['folk','indie-folk','indie'],moods:['calm','nostalgic','happy','peaceful'],times:['morning','afternoon'],vibe:'Sun-dappled baroque folk harmonies that sound like they belong in another century entirely.',search:'Fleet Foxes self titled'},
+    {title:'Helplessness Blues',artist:'Fleet Foxes',year:2011,genre:'Indie Folk',genreTags:['folk','indie-folk','indie'],moods:['melancholic','nostalgic','calm','peaceful'],times:['morning','afternoon'],vibe:'Pastoral folk meditations on purpose and belonging — more ambitious than their debut, and just as beautiful.',search:'Helplessness Blues Fleet Foxes'},
+    {title:'Boxer',artist:'The National',year:2007,genre:'Indie Rock',genreTags:['indie','rock'],moods:['melancholic','calm','nostalgic','focused'],times:['evening','night'],vibe:'Grown-up indie rock about failure, middle age, and the quiet dignity of carrying on anyway.',search:'Boxer The National'},
+    {title:'Merriweather Post Pavilion',artist:'Animal Collective',year:2009,genre:'Electronic / Indie',genreTags:['electronic','indie','psychedelic'],moods:['happy','energetic','nostalgic','excited'],times:['morning','afternoon'],vibe:'Communal psychedelia and pure sonic joy — the album that made experimental pop feel genuinely euphoric.',search:'Merriweather Post Pavilion Animal Collective'},
+    {title:'Lost in the Dream',artist:'The War on Drugs',year:2014,genre:'Indie Rock',genreTags:['indie','rock','alternative'],moods:['nostalgic','melancholic','calm','energetic'],times:['morning','afternoon','evening'],vibe:'Slow-burning, highway-wide rock suffused with longing — perfect for driving into the horizon.',search:'Lost in the Dream War on Drugs'},
+    {title:'Funeral',artist:'Arcade Fire',year:2004,genre:'Indie Rock',genreTags:['indie','rock'],moods:['nostalgic','melancholic','happy','sad','energetic'],times:['morning','afternoon','evening'],vibe:'Indie rock built like a cathedral — communal, overwhelming, and bursting with the joy of being alive.',search:'Funeral Arcade Fire'},
+    {title:'Neon Bible',artist:'Arcade Fire',year:2007,genre:'Indie Rock',genreTags:['indie','rock','alternative'],moods:['anxious','melancholic','nostalgic','energetic'],times:['afternoon','evening','night'],vibe:'Apocalyptic orchestral rock that captures the dread of modern life with theatrical, sweeping grandeur.',search:'Neon Bible Arcade Fire'},
+    {title:'In Rainbows',artist:'Radiohead',year:2007,genre:'Art Rock',genreTags:['rock','alternative'],moods:['melancholic','focused','calm','romantic'],times:['morning','afternoon','evening','night'],vibe:'Radiohead at their most warm and human — introspective rock with a quietly beating heart at its centre.',search:'In Rainbows Radiohead'},
+    {title:'OK Computer',artist:'Radiohead',year:1997,genre:'Art Rock',genreTags:['rock','alternative'],moods:['anxious','melancholic','focused','sad'],times:['evening','night'],vibe:'A prescient meditation on technology and alienation — unsettling, gorgeous, and more relevant than ever.',search:'OK Computer Radiohead'},
+    {title:'Kid A',artist:'Radiohead',year:2000,genre:'Electronic / Rock',genreTags:['rock','electronic','alternative'],moods:['anxious','focused','melancholic','calm'],times:['night'],vibe:'A radical departure into the electronic unknown — cold, alien, and strangely moving in its blankness.',search:'Kid A Radiohead'},
+    {title:'The Moon & Antarctica',artist:'Modest Mouse',year:2000,genre:'Indie Rock',genreTags:['indie','rock','alternative'],moods:['melancholic','sad','anxious','focused'],times:['night'],vibe:'A sprawling philosophical rock album about the cosmos, mortality, and the absurdity of simply existing.',search:'Moon Antarctica Modest Mouse'},
+    {title:'The Queen Is Dead',artist:'The Smiths',year:1986,genre:'Post-Punk',genreTags:['indie','post-punk','rock'],moods:['melancholic','nostalgic','sad','angry'],times:['afternoon','evening','night'],vibe:'Mordant wit wrapped in jangling guitars — the sound of being young, misunderstood, and thrillingly alive.',search:'The Queen Is Dead Smiths'},
+    {title:'Unknown Pleasures',artist:'Joy Division',year:1979,genre:'Post-Punk',genreTags:['post-punk','punk'],moods:['anxious','melancholic','sad','focused'],times:['night'],vibe:'Cavernous post-punk from the very edge of the abyss — claustrophobic, monumental, and haunting.',search:'Unknown Pleasures Joy Division'},
+    {title:'Is This It',artist:'The Strokes',year:2001,genre:'Indie Rock',genreTags:['indie','rock'],moods:['energetic','nostalgic','excited','happy'],times:['afternoon','evening'],vibe:'The New York rock revival in 36 perfect minutes — cool, effortless, and completely alive.',search:'Is This It Strokes'},
+    {title:'Siamese Dream',artist:'The Smashing Pumpkins',year:1993,genre:'Alternative Rock',genreTags:['alternative','grunge'],moods:['melancholic','energetic','nostalgic','anxious'],times:['afternoon','evening'],vibe:'Huge walls of guitar and fragile introspection — alternative rock that manages to be both abrasive and deeply tender.',search:'Siamese Dream Smashing Pumpkins'},
+    // ── Folk / Singer-Songwriter ──
+    {title:'Blue',artist:'Joni Mitchell',year:1971,genre:'Folk',genreTags:['folk','singer-songwriter'],moods:['sad','melancholic','nostalgic','calm'],times:['morning','afternoon','evening','night'],vibe:'Confessional folk poetry stripped completely bare — heartache distilled into something fragile and eternal.',search:'Blue Joni Mitchell'},
+    {title:'Pink Moon',artist:'Nick Drake',year:1972,genre:'Folk',genreTags:['folk','singer-songwriter'],moods:['sad','melancholic','peaceful','nostalgic'],times:['night','morning'],vibe:'28 minutes of hushed, fingerpicked beauty recorded in two nights — fragile and perfect as snowfall.',search:'Pink Moon Nick Drake'},
+    {title:'Five Leaves Left',artist:'Nick Drake',year:1969,genre:'Folk',genreTags:['folk','singer-songwriter'],moods:['melancholic','nostalgic','calm','peaceful'],times:['evening','night'],vibe:'Orchestral folk of unearthly delicacy — string arrangements wrapping a young voice in autumnal beauty.',search:'Five Leaves Left Nick Drake'},
+    {title:'For Emma, Forever Ago',artist:'Bon Iver',year:2007,genre:'Folk / Indie',genreTags:['indie-folk','folk','singer-songwriter'],moods:['sad','melancholic','calm','peaceful'],times:['morning','night'],vibe:'Born in an isolated Wisconsin cabin, these songs feel like snow — quiet, lonely, and impossibly beautiful.',search:'For Emma Forever Ago Bon Iver'},
+    {title:'Bon Iver, Bon Iver',artist:'Bon Iver',year:2011,genre:'Indie Folk / Electronic',genreTags:['indie-folk','electronic','folk'],moods:['calm','melancholic','nostalgic','peaceful'],times:['morning','afternoon','night'],vibe:'Named after American towns but sounding like no place on earth — expansive, emotional, and deeply mysterious.',search:'Bon Iver Bon Iver'},
+    {title:'Carrie & Lowell',artist:'Sufjan Stevens',year:2015,genre:'Folk',genreTags:['folk','singer-songwriter'],moods:['sad','melancholic','calm'],times:['evening','night'],vibe:'A deeply personal meditation on grief and memory, rendered in the most delicate acoustic arrangements imaginable.',search:'Carrie and Lowell Sufjan Stevens'},
+    {title:'Illinois',artist:'Sufjan Stevens',year:2005,genre:'Indie Folk',genreTags:['indie','folk','indie-folk'],moods:['nostalgic','melancholic','happy','calm'],times:['morning','afternoon'],vibe:'An orchestral tapestry of American mythology — intimate, sprawling, and achingly human.',search:'Illinois Sufjan Stevens'},
+    {title:'Either/Or',artist:'Elliott Smith',year:1997,genre:'Indie Folk',genreTags:['folk','indie','singer-songwriter'],moods:['sad','melancholic','nostalgic','calm'],times:['evening','night'],vibe:'Fingerpicked folk-pop of devastating emotional precision — songs that feel like someone reading your diary.',search:'Either Or Elliott Smith'},
+    {title:'Punisher',artist:'Phoebe Bridgers',year:2020,genre:'Indie Folk',genreTags:['indie-folk','singer-songwriter'],moods:['sad','melancholic','nostalgic','calm'],times:['evening','night'],vibe:'Ghost-story folk-pop about love, grief, and the apocalypse — painfully beautiful and quietly devastating.',search:'Punisher Phoebe Bridgers'},
+    {title:'The Record',artist:'boygenius',year:2023,genre:'Indie Rock / Folk',genreTags:['indie-folk','rock','singer-songwriter'],moods:['sad','melancholic','energetic','nostalgic'],times:['afternoon','evening'],vibe:'Three indie folk icons singing to each other about grief, love, and being alive — deeply moving and occasionally furious.',search:'The Record boygenius'},
+    {title:'Morning Phase',artist:'Beck',year:2014,genre:'Folk / Rock',genreTags:['folk','rock','singer-songwriter'],moods:['calm','melancholic','sad','peaceful'],times:['morning'],vibe:'Misty folk-rock draped in orchestral strings — the sound of quiet contemplation before the world wakes up.',search:'Morning Phase Beck'},
+    {title:'Sea Change',artist:'Beck',year:2002,genre:'Folk / Rock',genreTags:['folk','rock','singer-songwriter'],moods:['calm','sad','melancholic','peaceful'],times:['evening','night'],vibe:'Orchestral breakup folk of the highest order — lush, cinematic, and quietly devastating.',search:'Sea Change Beck'},
+    // ── Rock (continued) ──
+    {title:'Nevermind',artist:'Nirvana',year:1991,genre:'Grunge / Rock',genreTags:['grunge','rock'],moods:['energetic','nostalgic','sad','angry'],times:['afternoon','evening'],vibe:'The explosion that changed rock forever — raw, melodic, and bursting with teenage frustration and beauty.',search:'Nevermind Nirvana'},
+    {title:'Born to Run',artist:'Bruce Springsteen',year:1975,genre:'Rock',genreTags:['rock','classic-rock'],moods:['energetic','happy','nostalgic','excited'],times:['afternoon','evening'],vibe:'Orchestral rock and roll that captures the desperate, romantic longing for escape, freedom, and open roads.',search:'Born to Run Bruce Springsteen'},
+    {title:'Hybrid Theory',artist:'Linkin Park',year:2000,genre:'Nu-Metal / Rock',genreTags:['rock','metal'],moods:['energetic','angry','anxious','sad'],times:['afternoon','evening'],vibe:"The defining sound of a generation's frustration — metal riffs, hip-hop rhythms, and cathartic release.",search:'Hybrid Theory Linkin Park'},
+    {title:'Purple Rain',artist:'Prince',year:1984,genre:'Pop / R&B',genreTags:['pop','rnb','rock'],moods:['romantic','energetic','happy','nostalgic','excited'],times:['evening','night'],vibe:'A theatrical, genre-defying storm of guitar heroics, purple funk, and pure pop transcendence.',search:'Purple Rain Prince'},
+    {title:'Hozier',artist:'Hozier',year:2014,genre:'Blues / Folk Rock',genreTags:['folk','blues','rock'],moods:['romantic','happy','energetic','nostalgic'],times:['afternoon','evening'],vibe:'Blues-drenched folk rock with a roaring heart — big, soulful, and shot through with fierce romantic longing.',search:'Hozier self titled album'},
+    {title:'Fetch the Bolt Cutters',artist:'Fiona Apple',year:2020,genre:'Art Rock',genreTags:['pop','rock','singer-songwriter','alternative'],moods:['energetic','angry','nostalgic','anxious','excited'],times:['morning','afternoon','evening'],vibe:'An unruly, percussive art-rock statement of liberation — fearless, funny, and unlike anything else in its decade.',search:'Fetch the Bolt Cutters Fiona Apple'},
+    // ── Pop ──
+    {title:'1989',artist:'Taylor Swift',year:2014,genre:'Pop',genreTags:['pop'],moods:['happy','excited','nostalgic'],times:['afternoon','evening'],vibe:'Synth-pop euphoria wrapped in nostalgia — each track feels like a polaroid of a moment you never want to forget.',search:'1989 Taylor Swift'},
+    {title:'Body Talk',artist:'Robyn',year:2010,genre:'Pop / Electronic',genreTags:['pop','electronic'],moods:['happy','energetic','excited','melancholic'],times:['afternoon','evening'],vibe:'Dance music that makes you cry on the dancefloor — euphoric, heartbroken, and utterly singular.',search:'Body Talk Robyn'},
+    {title:'Norman Fucking Rockwell!',artist:'Lana Del Rey',year:2019,genre:'Pop / Singer-Songwriter',genreTags:['pop','singer-songwriter','dream-pop'],moods:['melancholic','nostalgic','calm','romantic'],times:['afternoon','evening','night'],vibe:'Languid Californian tragedy and grandeur — Lana at her most literary, cinematic, and achingly beautiful.',search:'Norman Fucking Rockwell Lana Del Rey'},
+    {title:'Born to Die',artist:'Lana Del Rey',year:2012,genre:'Indie Pop',genreTags:['pop','dream-pop'],moods:['melancholic','nostalgic','romantic','sad'],times:['evening','night'],vibe:'Cinematic sadcore pop drenched in Americana — doomed romance never sounded so intoxicatingly beautiful.',search:'Born to Die Lana Del Rey'},
+    {title:'Puberty 2',artist:'Mitski',year:2016,genre:'Indie Rock',genreTags:['indie','rock','alternative'],moods:['sad','melancholic','energetic','angry'],times:['afternoon','evening'],vibe:'Songs about longing and alienation that burst into sudden violence — emotionally overwhelming and absolutely unforgettable.',search:'Puberty 2 Mitski'},
+    {title:'Be the Cowboy',artist:'Mitski',year:2018,genre:'Indie Pop',genreTags:['indie','pop','alternative'],moods:['melancholic','energetic','sad','anxious'],times:['afternoon','evening'],vibe:'Theatrical indie pop with operatic emotional range — each song a perfectly carved short story.',search:'Be the Cowboy Mitski'},
+    {title:'Titanic Rising',artist:'Weyes Blood',year:2019,genre:'Dream Pop',genreTags:['dream-pop','pop','singer-songwriter'],moods:['melancholic','nostalgic','calm','romantic'],times:['afternoon','evening','night'],vibe:'Cinematic orchestral pop that sounds like the last beautiful film before the world ends.',search:'Titanic Rising Weyes Blood'},
+    {title:"When We All Fall Asleep, Where Do We Go?",artist:'Billie Eilish',year:2019,genre:'Pop / Electronic',genreTags:['pop','electronic'],moods:['melancholic','anxious','calm','excited'],times:['evening','night'],vibe:'Bedroom pop that turned the music industry upside down — intimate, unsettling, and genuinely unlike anything before it.',search:'When We All Fall Asleep Billie Eilish'},
+    {title:'Pure Heroine',artist:'Lorde',year:2013,genre:'Indie Pop',genreTags:['pop','indie'],moods:['nostalgic','melancholic','calm','excited'],times:['afternoon','evening'],vibe:'Teenage ennui and suburban grandeur packaged into minimalist pop perfection — a debut for the ages.',search:'Pure Heroine Lorde'},
+    {title:'Melodrama',artist:'Lorde',year:2017,genre:'Pop / Indie',genreTags:['pop','indie'],moods:['excited','happy','melancholic','sad'],times:['evening','night'],vibe:'Party as grief, dancing as coping — a heartbreak album that captures the trembling peak of every feeling.',search:'Melodrama Lorde'},
+    {title:'Emotion',artist:'Carly Rae Jepsen',year:2015,genre:'Pop / Electronic',genreTags:['pop','electronic'],moods:['happy','excited','energetic','romantic'],times:['afternoon','evening'],vibe:'The best pure pop album of the 2010s — hooks so sharp they could cut you, feelings so large they overwhelm.',search:'Emotion Carly Rae Jepsen'},
+    {title:'BRAT',artist:'Charli XCX',year:2024,genre:'Pop / Electronic',genreTags:['pop','electronic'],moods:['energetic','excited','happy','angry'],times:['afternoon','evening'],vibe:'Acid house-influenced hyperpop that became a cultural phenomenon — raw, self-aware, and undeniably infectious.',search:'BRAT Charli XCX'},
+    {title:'Igor',artist:'Tyler, the Creator',year:2019,genre:'Neo-Soul / Pop',genreTags:['neo-soul','pop'],moods:['romantic','excited','melancholic','anxious'],times:['evening','night'],vibe:'A maximalist pop opera about unrequited love — dissonant, lush, and deeply strange in the very best way.',search:'Igor Tyler the Creator'},
+    {title:'Blonde',artist:'Frank Ocean',year:2016,genre:'R&B / Pop',genreTags:['rnb','neo-soul'],moods:['romantic','melancholic','calm','nostalgic'],times:['evening','night'],vibe:'A shifting, impressionistic collage of desire, memory, and loss — modern pop music at its most vulnerable.',search:'Blonde Frank Ocean'},
+    // ── World / Other ──
+    {title:'Zombie',artist:'Fela Kuti',year:1977,genre:'Afrobeat / Funk',genreTags:['afrobeats','funk'],moods:['energetic','angry','focused','excited'],times:['afternoon','evening'],vibe:'Afrobeat protest music as hypnotic as a trance — relentless grooves carrying an urgent political message.',search:'Zombie Fela Kuti'},
+    {title:'Buena Vista Social Club',artist:'Buena Vista Social Club',year:1997,genre:'Latin / World',genreTags:['latin','world','jazz'],moods:['happy','nostalgic','romantic','calm'],times:['afternoon','evening'],vibe:'A rediscovery of Cuban music and its legends — warm, nostalgic, and alive with decades of accumulated joy.',search:'Buena Vista Social Club'},
+    {title:'In the Wee Small Hours',artist:'Frank Sinatra',year:1955,genre:'Jazz / Vocal',genreTags:['jazz'],moods:['romantic','sad','melancholic','nostalgic','calm'],times:['night'],vibe:'The original late-night heartbreak album — Sinatra at his most bare, with the whole world asleep around him.',search:'In the Wee Small Hours Frank Sinatra'},
+    {title:"You're Dead!",artist:'Flying Lotus',year:2014,genre:'Jazz / Electronic',genreTags:['electronic','jazz','hiphop'],moods:['focused','energetic','anxious'],times:['afternoon','evening'],vibe:'A frantic, exhilarating meditation on mortality — jazz fusion for the digital age, played at light speed.',search:"You're Dead Flying Lotus"},
+    {title:'After Hours',artist:'The Weeknd',year:2020,genre:'Pop / R&B',genreTags:['pop','rnb'],moods:['romantic','melancholic','energetic','anxious'],times:['night'],vibe:'Synth-drenched noir pop that transforms heartbreak and paranoia into cinematic, neon-lit spectacle.',search:'After Hours Weeknd'},
+    {title:'Lemonade',artist:'Beyoncé',year:2016,genre:'Pop / R&B',genreTags:['pop','rnb'],moods:['energetic','angry','excited','happy','sad'],times:['afternoon','evening'],vibe:'A visual and sonic reckoning — defiant, complex, and one of the most commanding artistic statements of its era.',search:'Lemonade Beyonce'},
+  ];
+
+  /* ================================================================
+     STORAGE / AUTH
+  ================================================================ */
+  const SK = 'album-otd-v3';
+  function loadStore() { try { return JSON.parse(localStorage.getItem(SK)) || {users:{},current:null,spotify:null}; } catch { return {users:{},current:null,spotify:null}; } }
+  function saveStore(s) { localStorage.setItem(SK, JSON.stringify(s)); }
+  function getCurrentUser() { const s=loadStore(); return s.current ? (s.users[s.current]||null) : null; }
+  function saveUser(u) { const s=loadStore(); s.users[u.id]=u; saveStore(s); }
+  function getAllUsers() { return Object.values(loadStore().users); }
+  function createOrLogin(name) {
+    const s=loadStore(); const id=name.toLowerCase().trim().replace(/\s+/g,'_');
+    if(!s.users[id]) s.users[id]={id,displayName:name.trim(),favoriteGenres:[],likedAlbums:[],dislikedAlbums:[],likedAlbumMoods:[],savedAlbums:[],savedSongs:[],onboardingComplete:false,createdAt:Date.now()};
+    s.current=id; saveStore(s); return s.users[id];
+  }
+  function logout() { isGuest=false; const s=loadStore(); s.current=null; saveStore(s); selectedMoods.clear(); lastAlbum=null; currentAlbum=null; hideResult(); renderAuthScreen(); showScreen('s-auth'); }
+  function getSpotifyCreds() { return loadStore().spotify||null; }
+  function saveSpotifyCreds(cid,sec) { const s=loadStore(); s.spotify={clientId:cid,clientSecret:sec}; saveStore(s); spotifyToken=null; tokenExpiry=0; }
+  function clearSpotifyCreds() { const s=loadStore(); s.spotify=null; saveStore(s); spotifyToken=null; tokenExpiry=0; }
+
+  /* ================================================================
+     STATE
+  ================================================================ */
+  let selectedTime='night', selectedMoods=new Set(), selectedGenres=new Set();
+  let currentQuizPage=0, lastAlbum=null, currentAlbum=null, currentAlbumTracks=[];
+  let spotifyToken=null, tokenExpiry=0;
+  let isGuest=false;
+
+  function detectTime() { const h=new Date().getHours(); if(h>=6&&h<12)return'morning'; if(h>=12&&h<17)return'afternoon'; if(h>=17&&h<21)return'evening'; return'night'; }
+
+  /* ================================================================
+     NAVIGATION
+  ================================================================ */
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(el=>{el.classList.remove('active');el.style.display='none';});
+    const n=document.getElementById(id); n.style.display='block'; n.classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  /* ================================================================
+     INIT
+  ================================================================ */
+  function init() {
+    selectedTime=detectTime(); document.body.setAttribute('data-time',selectedTime);
+    const user=getCurrentUser();
+    if(user){ if(user.onboardingComplete){initMainApp();showScreen('s-main');}else{selectedGenres=new Set(user.favoriteGenres||[]);renderGenresScreen();showScreen('s-genres');} }
+    else { renderAuthScreen(); showScreen('s-auth'); }
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeSaved();closeSettings();closeProfile();} });
+  }
+
+  /* ================================================================
+     AUTH
+  ================================================================ */
+  function renderAuthScreen() {
+    const users=getAllUsers(), wrap=document.getElementById('existingUsersWrap');
+    if(users.length>0){
+      wrap.style.display='block';
+      document.getElementById('existingUserChips').innerHTML=users.map(u=>`<button class="user-chip" onclick="quickLogin('${u.id}')"><div class="chip-avatar">${u.displayName.charAt(0).toUpperCase()}</div>${escHtml(u.displayName)}</button>`).join('');
+    } else { wrap.style.display='none'; }
+  }
+  function handleAuth() { const inp=document.getElementById('usernameInput'),name=inp.value.trim(); if(!name){inp.focus();return;} inp.value=''; afterAuth(createOrLogin(name)); }
+  function quickLogin(id) { const s=loadStore();s.current=id;saveStore(s);afterAuth(getCurrentUser()); }
+  function afterAuth(user) { if(user.onboardingComplete){initMainApp();showScreen('s-main');}else{selectedGenres=new Set(user.favoriteGenres||[]);renderGenresScreen();showScreen('s-genres');} }
+  function handleGuestMode() { isGuest=true; initMainApp(); showScreen('s-main'); }
+
+  /* ================================================================
+     ONBOARDING: GENRES
+  ================================================================ */
+  function renderGenresScreen() {
+    document.getElementById('genreGrid').innerHTML=GENRES.map(g=>`<button class="genre-pill ${selectedGenres.has(g.id)?'selected':''}" data-genre="${g.id}" onclick="toggleGenre('${g.id}')"><span>${g.emoji}</span>${g.label}</button>`).join('');
+    updateGenreHint();
+  }
+  function toggleGenre(id) { selectedGenres.has(id)?selectedGenres.delete(id):selectedGenres.add(id); document.querySelectorAll('.genre-pill').forEach(p=>p.classList.toggle('selected',selectedGenres.has(p.dataset.genre))); updateGenreHint(); }
+  function updateGenreHint() { const n=selectedGenres.size; document.getElementById('genreHint').innerHTML=n===0?'Pick at least one genre to continue':`<span class="ob-count">${n} genre${n>1?'s':''} selected</span> — great taste!`; document.getElementById('genreContinueBtn').disabled=n===0; }
+  function saveGenresAndContinue() { const u=getCurrentUser();if(!u)return; u.favoriteGenres=[...selectedGenres];saveUser(u); currentQuizPage=0;renderQuizPage(0);showScreen('s-quiz'); }
+
+  /* ================================================================
+     ONBOARDING: QUIZ
+  ================================================================ */
+  function renderQuizPage(idx) {
+    const page=QUIZ_PAGES[idx],user=getCurrentUser();
+    document.getElementById('quizPageLabel').textContent=`Albums · Page ${idx+1} of ${QUIZ_PAGES.length}`;
+    document.getElementById('quizTitle').textContent=page.title;
+    document.getElementById('quizSubtitle').textContent=page.subtitle;
+    document.querySelectorAll('#pb-quiz .progress-step').forEach((el,i)=>el.classList.toggle('done',i<=idx+1));
+    const liked=new Set(user?user.likedAlbums:[]),dis=new Set(user?user.dislikedAlbums:[]);
+    document.getElementById('quizGrid').innerHTML=page.albums.map((a,i)=>`<div class="quiz-card ${liked.has(a.title)?'liked':''} ${dis.has(a.title)?'disliked':''}" id="qcard-${i}" data-title="${escHtml(a.title)}"><div class="quiz-card-art"><div class="quiz-art-ph" id="qph-${i}">🎵</div><img id="qimg-${i}" onload="this.classList.add('loaded');document.getElementById('qph-${i}').style.display='none';" onerror="this.remove();"/><div class="quiz-card-btns"><button class="qbtn qbtn-like" onclick="likeQuizAlbum(${i})" title="Love it">♥</button><button class="qbtn qbtn-x" onclick="dislikeQuizAlbum(${i})" title="Never show">✕</button></div></div><div class="quiz-card-meta"><p class="quiz-card-title">${escHtml(a.title)}</p><p class="quiz-card-artist">${escHtml(a.artist)}</p></div></div>`).join('');
+    updateQuizHint();
+    page.albums.forEach(async(a,i)=>{ const url=await fetchArt(a.search); if(url){const img=document.getElementById(`qimg-${i}`);if(img)img.src=url;} });
+  }
+  function updateQuizHint() { const u=getCurrentUser();if(!u)return; const p=QUIZ_PAGES[currentQuizPage]; const lc=p.albums.filter(a=>u.likedAlbums.includes(a.title)).length,xc=p.albums.filter(a=>u.dislikedAlbums.includes(a.title)).length; const parts=[]; if(lc)parts.push(`<span class="ob-count">${lc} saved</span>`); if(xc)parts.push(`${xc} hidden`); document.getElementById('quizHint').innerHTML=parts.length?parts.join(' · ')+' on this page':'No pressure — you can skip any page'; }
+  function likeQuizAlbum(idx) { const u=getCurrentUser();if(!u)return; const a=QUIZ_PAGES[currentQuizPage].albums[idx],card=document.getElementById(`qcard-${idx}`); if(u.likedAlbums.includes(a.title)){u.likedAlbums=u.likedAlbums.filter(t=>t!==a.title);a.moods.forEach(m=>{const i=u.likedAlbumMoods.indexOf(m);if(i>=0)u.likedAlbumMoods.splice(i,1);});card.classList.remove('liked');}else{u.likedAlbums.push(a.title);u.likedAlbumMoods.push(...a.moods);card.classList.add('liked');if(u.dislikedAlbums.includes(a.title)){u.dislikedAlbums=u.dislikedAlbums.filter(t=>t!==a.title);card.classList.remove('disliked');}} saveUser(u);updateQuizHint(); }
+  function dislikeQuizAlbum(idx) { const u=getCurrentUser();if(!u)return; const a=QUIZ_PAGES[currentQuizPage].albums[idx],card=document.getElementById(`qcard-${idx}`); if(u.dislikedAlbums.includes(a.title)){u.dislikedAlbums=u.dislikedAlbums.filter(t=>t!==a.title);card.classList.remove('disliked');}else{u.dislikedAlbums.push(a.title);card.classList.add('disliked');if(u.likedAlbums.includes(a.title)){u.likedAlbums=u.likedAlbums.filter(t=>t!==a.title);a.moods.forEach(m=>{const i=u.likedAlbumMoods.indexOf(m);if(i>=0)u.likedAlbumMoods.splice(i,1);});card.classList.remove('liked');}} saveUser(u);updateQuizHint(); }
+  function skipQuizPage() { continueQuiz(); }
+  function continueQuiz() { if(currentQuizPage<QUIZ_PAGES.length-1){currentQuizPage++;renderQuizPage(currentQuizPage);window.scrollTo(0,0);}else{const u=getCurrentUser();u.onboardingComplete=true;saveUser(u);initMainApp();showScreen('s-main');} }
+
+  /* ================================================================
+     MAIN APP
+  ================================================================ */
+  function initMainApp() {
+    selectedTime=detectTime(); document.body.setAttribute('data-time',selectedTime);
+    renderMoodGrid(); renderNuancedMoodGrid(); selectTime(selectedTime,false);
+    const u=getCurrentUser();
+    const myAlbumsBtn=document.getElementById('myAlbumsBtn');
+    const logoutBtn=document.getElementById('logoutBtn');
+    const profileBtn=document.getElementById('profileBtn');
+    if(isGuest) {
+      document.getElementById('userAvatar').textContent='👤';
+      document.getElementById('userAvatar').style.fontSize='.85rem';
+      document.getElementById('userName').textContent='Guest';
+      if(myAlbumsBtn) myAlbumsBtn.style.display='none';
+      if(profileBtn) profileBtn.style.display='none';
+      if(logoutBtn) { logoutBtn.textContent='Sign In'; logoutBtn.onclick=function(){logout();}; }
+    } else if(u) {
+      document.getElementById('userAvatar').textContent=u.displayName.charAt(0).toUpperCase();
+      document.getElementById('userAvatar').style.fontSize='';
+      document.getElementById('userName').textContent=u.displayName;
+      if(myAlbumsBtn) myAlbumsBtn.style.display='';
+      if(profileBtn) profileBtn.style.display='';
+      if(logoutBtn) { logoutBtn.textContent='Sign out'; logoutBtn.onclick=function(){logout();}; }
+      updateSavedCount();
+    }
+    updateSettingsBtn();
+    if(getSpotifyCreds()) loadNewReleases();
+  }
+  function renderMoodGrid() { document.getElementById('moodGrid').innerHTML=MOODS.map(m=>`<button class="mood-btn" data-mood="${m.id}" onclick="toggleMood('${m.id}')"><span class="mood-emoji">${m.emoji}</span><span class="mood-name">${m.name}</span></button>`).join(''); }
+  function renderNuancedMoodGrid() { document.getElementById('nuancedMoodGrid').innerHTML=NUANCED_MOODS.map(m=>`<button class="mood-btn" data-mood="${m.id}" onclick="toggleMood('${m.id}')"><span class="mood-emoji">${m.emoji}</span><span class="mood-name">${m.name}</span></button>`).join(''); }
+  let nuancedOpen=false;
+  function toggleNuancedMoods() { nuancedOpen=!nuancedOpen; document.getElementById('nuancedSection').style.display=nuancedOpen?'block':'none'; document.getElementById('expandMoodsIcon').classList.toggle('open',nuancedOpen); document.getElementById('expandMoodsText').textContent=nuancedOpen?'Fewer emotions':'More nuanced emotions'; }
+  function selectTime(time,resetRes=true) { selectedTime=time; document.body.setAttribute('data-time',time); document.querySelectorAll('.time-btn').forEach(b=>b.classList.toggle('active',b.dataset.timeValue===time)); if(resetRes)hideResult(); }
+  function toggleMood(id) {
+    selectedMoods.has(id)?selectedMoods.delete(id):selectedMoods.add(id);
+    document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('selected',selectedMoods.has(b.dataset.mood)));
+    const n=selectedMoods.size,hint=document.getElementById('selectionHint'),btn=document.getElementById('generateBtn');
+    if(n===0){hint.innerHTML='Select at least one mood to continue';btn.disabled=true;}
+    else{const names=[...selectedMoods].map(mid=>allMoods().find(m=>m.id===mid)?.name).filter(Boolean).join(', ');hint.innerHTML=`<span class="mood-count">${n} mood${n>1?'s':''} selected</span> — ${names}`;btn.disabled=false;}
+  }
+
+  /* ================================================================
+     ALGORITHM (curated)
+  ================================================================ */
+  function eligibleAlbums() { const u=getCurrentUser(); if(!u||!u.dislikedAlbums.length)return ALBUMS; return ALBUMS.filter(a=>!u.dislikedAlbums.includes(a.title)); }
+  function scoreAlbum(album) {
+    let score=0; const picked=expandMoods([...selectedMoods]);
+    score+=album.moods.filter(m=>picked.includes(m)).length*3;
+    if(album.times.includes(selectedTime))score+=2;
+    const u=getCurrentUser();
+    if(u){ if(u.favoriteGenres.length)score+=(album.genreTags||[]).filter(g=>u.favoriteGenres.includes(g)).length*2; if(u.likedAlbumMoods.length){const lm=new Set(u.likedAlbumMoods);score+=album.moods.filter(m=>lm.has(m)).length;} }
+    return score;
+  }
+  function pickAlbum() {
+    const pool=eligibleAlbums(); const scored=pool.map(a=>({a,s:scoreAlbum(a)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+    let cands; if(!scored.length){const bt=pool.filter(a=>a.times.includes(selectedTime));cands=(bt.length?bt:pool).map(a=>({a}));}else{const best=scored[0].s;cands=scored.filter(x=>x.s>=best-2);}
+    const f=lastAlbum?cands.filter(x=>x.a.title!==lastAlbum.title):cands; const fin=f.length?f:cands;
+    return fin[Math.floor(Math.random()*fin.length)].a;
+  }
+  function buildWhy(album) {
+    const picked=[...selectedMoods];
+    const expanded=expandMoods(picked);
+    const matched=album.moods.filter(m=>expanded.includes(m));
+    const t=TIME_PHRASES[selectedTime];
+    if(!matched.length)return`${t}, this album's energy feels like the perfect match for the moment.`;
+    const phrases=picked.map(id=>MOOD_PHRASES[id]||allMoods().find(m=>m.id===id)?.name?.toLowerCase()).filter(Boolean);
+    const mStr=phrases.length===1?phrases[0]:phrases.slice(0,-1).join(', ')+' and '+phrases.at(-1);
+    return`${t}, when you're feeling ${mStr}, this album speaks to exactly where you are.`;
+  }
+
+  /* ================================================================
+     SPOTIFY API
+  ================================================================ */
+  async function getSpotifyToken() {
+    const creds=getSpotifyCreds(); if(!creds)return null;
+    if(spotifyToken&&Date.now()<tokenExpiry)return spotifyToken;
+    try {
+      const res=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','Authorization':'Basic '+btoa(creds.clientId+':'+creds.clientSecret)},body:'grant_type=client_credentials'});
+      const data=await res.json();
+      if(data.access_token){spotifyToken=data.access_token;tokenExpiry=Date.now()+(data.expires_in-60)*1000;return spotifyToken;}
+    } catch(e){console.log('Spotify token error:',e);}
+    return null;
+  }
+
+  async function searchSpotifyAlbum(title, artist) {
+    const token=await getSpotifyToken(); if(!token)return null;
+    try {
+      const q=encodeURIComponent(`album:${title} artist:${artist}`);
+      const res=await fetch(`https://api.spotify.com/v1/search?q=${q}&type=album&limit=1`,{headers:{Authorization:`Bearer ${token}`}});
+      if(!res.ok)return null;
+      const data=await res.json();
+      const album=data.albums?.items?.[0];
+      return album?.id||null;
+    } catch(e){console.log('Spotify search error:',e);return null;}
+  }
+
+  function getMoodAudioFeatures(moods) {
+    const base=expandMoods(moods);
+    const sums={},counts={};
+    base.forEach(mood=>{ const f=MOOD_AUDIO[mood]||{}; Object.entries(f).forEach(([k,v])=>{sums[k]=(sums[k]||0)+v;counts[k]=(counts[k]||0)+1;}); });
+    const out={}; Object.keys(sums).forEach(k=>out[k]=parseFloat((sums[k]/counts[k]).toFixed(3)));
+    return out;
+  }
+
+  async function getSpotifyRecommendation(moods) {
+    const token=await getSpotifyToken(); if(!token)return null;
+    const user=getCurrentUser(); const genres=(user?.favoriteGenres||[]);
+    const seedGenres=genres.map(g=>SPOTIFY_GENRE_MAP[g]).filter(Boolean).slice(0,5);
+    if(!seedGenres.length){
+      // fallback to a few popular genres if user has no mapped ones
+      seedGenres.push('pop','rock','indie');
+    }
+    const audioFeatures=getMoodAudioFeatures(moods);
+    const params=new URLSearchParams({seed_genres:seedGenres.join(','),limit:20,...audioFeatures});
+    try {
+      const res=await fetch(`https://api.spotify.com/v1/recommendations?${params}`,{headers:{Authorization:`Bearer ${token}`}});
+      if(!res.ok)throw new Error(`${res.status}`);
+      const data=await res.json();
+      if(!data.tracks?.length)return null;
+      const track=data.tracks[Math.floor(Math.random()*Math.min(8,data.tracks.length))];
+      const album=track.album;
+      return {
+        title:album.name, artist:album.artists.map(a=>a.name).join(', '),
+        year:new Date(album.release_date||'2000').getFullYear(),
+        genre:'Spotify · '+seedGenres[0].replace(/-/g,' '),
+        genreTags:seedGenres, moods:moods,
+        vibe:`Recommended by Spotify for your current mood. This album matches your audio fingerprint — expect a ${moods.slice(0,2).map(m=>MOOD_PHRASES[m]).join(' and ')} sound.`,
+        artUrl:album.images[0]?.url||null,
+        spotifyUrl:album.external_urls?.spotify||`https://open.spotify.com/search/${encodeURIComponent(album.name)}`,
+        isSpotify:true,
+        spotifyAlbumId:album.id,
+      };
+    } catch(e){console.log('Spotify recommendation error:',e);return null;}
+  }
+
+  async function loadNewReleases() {
+    const token=await getSpotifyToken(); if(!token){document.getElementById('nrSection').style.display='none';return;}
+    try {
+      const res=await fetch('https://api.spotify.com/v1/browse/new-releases?limit=14&country=US',{headers:{Authorization:`Bearer ${token}`}});
+      if(!res.ok)throw new Error('NR failed');
+      const data=await res.json();
+      const items=data.albums?.items||[];
+      if(!items.length){document.getElementById('nrSection').style.display='none';return;}
+      document.getElementById('nrGrid').innerHTML=items.map(a=>`<a class="nr-card" href="${escHtml(a.external_urls?.spotify||'#')}" target="_blank" rel="noopener"><img class="nr-art" src="${escHtml(a.images[1]?.url||a.images[0]?.url||'')}" alt="${escHtml(a.name)}" loading="lazy" /><p class="nr-title">${escHtml(a.name)}</p><p class="nr-artist">${escHtml(a.artists[0]?.name||'')}</p></a>`).join('');
+      document.getElementById('nrSection').style.display='block';
+    } catch(e){console.log('New releases error:',e);document.getElementById('nrSection').style.display='none';}
+  }
+
+  /* ================================================================
+     GENERATE
+  ================================================================ */
+  const MIN_LOADING_MS = 2600;
+  async function generateAlbum() {
+    document.getElementById('loadingText').textContent='Finding your perfect album…';
+    const loadStart=Date.now();
+    showLoading(true,[...selectedMoods]);
+    const moods=[...selectedMoods];
+    let album=null, artUrl=null;
+
+    // Try Spotify first if connected
+    if(getSpotifyCreds()) {
+      document.getElementById('loadingText').textContent='Asking Spotify for your vibe…';
+      const spotifyResult=await getSpotifyRecommendation(moods);
+      if(spotifyResult){ album=spotifyResult; artUrl=spotifyResult.artUrl; }
+    }
+
+    // Fall back to curated list
+    if(!album) {
+      document.getElementById('loadingText').textContent='Finding your perfect album…';
+      album=pickAlbum(); lastAlbum=album;
+      artUrl=await fetchArt(album.search);
+    }
+
+    const elapsed=Date.now()-loadStart;
+    if(elapsed<MIN_LOADING_MS) await new Promise(r=>setTimeout(r,MIN_LOADING_MS-elapsed));
+    currentAlbum=album;
+    showLoading(false);
+    await renderAlbum(album,artUrl);
+  }
+
+  async function fetchArt(query) {
+    try {
+      const res=await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=album&limit=5`,{signal:AbortSignal.timeout(6000)});
+      const data=await res.json();
+      if(data.results?.length)return data.results[0].artworkUrl100.replace('100x100bb','600x600bb');
+    } catch { /* silent */ }
+    return null;
+  }
+
+  async function fetchAlbumTracks(album) {
+    if(album.spotifyAlbumId&&getSpotifyCreds()) {
+      const token=await getSpotifyToken(); if(!token)return [];
+      try {
+        const res=await fetch(`https://api.spotify.com/v1/albums/${album.spotifyAlbumId}/tracks?limit=50`,{headers:{Authorization:`Bearer ${token}`}});
+        if(!res.ok)return [];
+        const data=await res.json();
+        return (data.items||[]).map((t,i)=>({num:i+1,name:t.name}));
+      } catch{return [];}
+    }
+    try {
+      const term=album.search||(album.title+' '+album.artist);
+      const searchRes=await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=song&limit=200`,{signal:AbortSignal.timeout(6000)});
+      const searchData=await searchRes.json();
+      const songs=searchData.results||[];
+      const collMap=new Map();
+      const titleLower=album.title.toLowerCase().replace(/[^a-z0-9]/g,'');
+      for(const s of songs){
+        if(!s.collectionId||!s.trackName)continue;
+        const k=s.collectionId;
+        if(!collMap.has(k))collMap.set(k,{name:s.collectionName||'',tracks:[]});
+        const c=collMap.get(k);
+        if(!c.tracks.some(t=>t.name===s.trackName))c.tracks.push({num:s.trackNumber||0,name:s.trackName});
+      }
+      let best=null;
+      for(const [id,c] of collMap){
+        const collNameNorm=(c.name||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+        const match=titleLower&&(collNameNorm.includes(titleLower)||titleLower.includes(collNameNorm));
+        const better=!best||(match&&!best.match)||(match===best.match&&c.tracks.length>best.tracks.length);
+        if(better)best={tracks:c.tracks,match:match};
+      }
+      if(!best||!best.tracks.length)return [];
+      const tracks=best.tracks.sort((a,b)=>(a.num||0)-(b.num||0));
+      return tracks.map((t,i)=>({num:t.num||i+1,name:t.name}));
+    } catch{return [];}
+  }
+
+  function isSongLiked(albumTitle,albumArtist,songName) {
+    const u=getCurrentUser(); if(!u||!u.savedSongs)return false;
+    return u.savedSongs.some(s=>s.albumTitle===albumTitle&&s.albumArtist===albumArtist&&s.songName===songName);
+  }
+  function toggleSongHeart(albumTitle,albumArtist,songName) {
+    const u=getCurrentUser(); if(!u||isGuest)return;
+    if(!u.savedSongs)u.savedSongs=[];
+    const idx=u.savedSongs.findIndex(s=>s.albumTitle===albumTitle&&s.albumArtist===albumArtist&&s.songName===songName);
+    if(idx>=0){u.savedSongs.splice(idx,1);}else{u.savedSongs.push({albumTitle,albumArtist,songName,savedAt:Date.now(),moods:[...selectedMoods]});}
+    saveUser(u);
+    if(currentAlbumTracks.length)renderTrackList(currentAlbum,currentAlbumTracks);
+  }
+
+  async function renderAlbum(album,artUrl) {
+    document.getElementById('albumTitle').textContent=album.title;
+    document.getElementById('albumArtist').textContent=`${album.artist}  ·  ${album.year}`;
+    document.getElementById('albumVibe').textContent=album.vibe;
+    document.getElementById('albumWhy').textContent=album.isSpotify?`Spotify recommendation based on your mood profile and genre preferences.`:buildWhy(album);
+    const isSpotify=album.isSpotify;
+    document.getElementById('albumTags').innerHTML=`<span class="tag ${isSpotify?'spotify-tag':''}">${album.genre}</span><span class="tag">${album.year}</span>${isSpotify?'<span class="tag spotify-tag">via Spotify</span>':''}`;
+    const spotLink=document.getElementById('spotifyBtn');
+    spotLink.href=album.spotifyUrl||(album.isSpotify?'#':`https://open.spotify.com/search/${encodeURIComponent(album.title+' '+album.artist)}`);
+    const img=document.getElementById('artImg'),ph=document.getElementById('artPlaceholder');
+    img.classList.remove('loaded'); ph.style.display='';
+    if(artUrl){img.src=artUrl;img.alt=`${album.title} by ${album.artist}`;}
+    const saveBtn=document.getElementById('saveBtn');
+    if(getCurrentUser()&&!isGuest){saveBtn.style.display='inline-flex';updateSaveButton();}else{saveBtn.style.display='none';}
+    const embedWrap=document.getElementById('spotifyEmbedWrap');
+    const embedIframe=document.getElementById('spotifyEmbed');
+    let albumId=album.spotifyAlbumId||null;
+    if(!albumId&&getSpotifyCreds())albumId=await searchSpotifyAlbum(album.title,album.artist);
+    if(albumId){
+      embedIframe.src=`https://open.spotify.com/embed/album/${albumId}?theme=0`;
+      embedWrap.style.display='block';
+    }else{
+      embedWrap.style.display='none';
+      embedIframe.src='';
+    }
+    const el=document.getElementById('albumResult');
+    el.style.display='block';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('visible')));
+    setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),120);
+    setTimeout(()=>showJournal(album),900);
+  }
+
+  function hideResult() {
+    const el=document.getElementById('albumResult'); el.classList.remove('visible');
+    setTimeout(()=>{if(!el.classList.contains('visible'))el.style.display='none';},650);
+    const embedWrap=document.getElementById('spotifyEmbedWrap');
+    if(embedWrap){embedWrap.style.display='none';document.getElementById('spotifyEmbed').src='';}
+    const j=document.getElementById('journalSection'); if(j){j.style.display='none';j.style.animation='none';}
+    const ts=document.getElementById('trackListSection'); if(ts)ts.style.display='none';
+    document.getElementById('trackList').innerHTML='';
+    currentAlbumTracks=[];
+    document.getElementById('journalTA1').value=''; document.getElementById('journalTA2').value=''; document.getElementById('journalTA3').value='';
+    document.getElementById('journalSavedMsg').classList.remove('visible');
+  }
+
+  async function showJournal(album) {
+    const content=getJournalContent([...selectedMoods]);
+    document.getElementById('journalIntro').textContent=content.intro;
+    document.getElementById('journalBody').textContent=content.body;
+    document.getElementById('journalQ1').textContent=content.q1;
+    document.getElementById('journalTA1').placeholder=album?`Listening to ${album.title}…`:'Write here…';
+    document.getElementById('journalQ2').textContent=content.q2;
+    document.getElementById('journalTA2').placeholder='Write here…';
+    const j=document.getElementById('journalSection');
+    j.style.animation=''; j.style.display='block';
+
+    const trackSection=document.getElementById('trackListSection');
+    const trackUl=document.getElementById('trackList');
+    trackSection.style.display='block';
+    trackUl.innerHTML='<li class="track-list-loading">Loading tracklist…</li>';
+    currentAlbumTracks=await fetchAlbumTracks(album);
+    if(currentAlbumTracks.length){renderTrackList(album,currentAlbumTracks);}else{trackUl.innerHTML='<li class="track-list-loading">Tracklist unavailable</li>';}
+  }
+
+  function renderTrackList(album,tracks) {
+    const ul=document.getElementById('trackList');
+    const esc=(s)=>String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const showHearts=getCurrentUser()&&!isGuest;
+    ul.innerHTML=tracks.map((t,i)=>{
+      const liked=isSongLiked(album.title,album.artist,t.name);
+      const heartBtn=showHearts?`<button class="track-heart ${liked?'liked':''}" onclick="event.stopPropagation();toggleSongHeart('${esc(album.title)}','${esc(album.artist)}','${esc(t.name)}')" title="${liked?'Unheart':'Heart this song'}">${liked?'♥':'♡'}</button>`:'';
+      return `<li class="track-list-li" id="track-li-${i}"><div class="track-row"><span class="track-num">${t.num}</span><span class="track-name clickable" data-artist="${escHtml(album.artist)}" data-song="${escHtml(t.name)}" onclick="toggleLyrics(this,${i})" title="View lyrics & meaning">${escHtml(t.name)}</span>${heartBtn}</div><div class="track-lyrics-wrap" id="track-lyrics-${i}" style="display:none"></div></li>`;
+    }).join('');
+  }
+
+  let lyricsCache={};
+  async function toggleLyrics(el,idx) {
+    const wrap=document.getElementById(`track-lyrics-${idx}`);
+    if(!wrap)return;
+    const artist=el.dataset.artist||'', song=el.dataset.song||'';
+    const key=`${artist}|${song}`;
+    if(wrap.style.display==='block'){
+      wrap.style.display='none'; wrap.innerHTML=''; return;
+    }
+    wrap.style.display='block';
+    if(lyricsCache[key]){
+      renderLyricsContent(wrap,lyricsCache[key],artist,song); return;
+    }
+    wrap.innerHTML='<p class="track-lyrics-loading">Loading lyrics…</p>';
+    let lyrics=null;
+    try {
+      const res=await fetch(`https://lrclib.net/api/search?track_name=${encodeURIComponent(song)}&artist_name=${encodeURIComponent(artist)}&limit=3`,{signal:AbortSignal.timeout(8000)});
+      const data=await res.json();
+      lyrics=(Array.isArray(data)&&data[0]?.plainLyrics)||null;
+    }catch{}
+    lyricsCache[key]=lyrics;
+    renderLyricsContent(wrap,lyrics,artist,song);
+  }
+  function renderLyricsContent(wrap,lyrics,artist,song) {
+    const geniusUrl=`https://genius.com/search?q=${encodeURIComponent(artist+' '+song)}`;
+    const lyricsHtml=lyrics?`<pre class="track-lyrics-text">${escHtml(lyrics)}</pre>`:'<p class="track-lyrics-empty">Lyrics not available for this track.</p>';
+    wrap.innerHTML=lyricsHtml+`<a class="track-genius-link" href="${geniusUrl}" target="_blank" rel="noopener">View on Genius — lyrics, meaning & annotations →</a>`;
+  }
+
+  function saveJournal() {
+    const u=getCurrentUser(); const ta1=document.getElementById('journalTA1').value.trim(), ta2=document.getElementById('journalTA2').value.trim(), ta3=document.getElementById('journalTA3').value.trim();
+    if(!ta1&&!ta2&&!ta3)return;
+    if(u&&currentAlbum){
+      const entry={albumTitle:currentAlbum.title,albumArtist:currentAlbum.artist,moods:[...selectedMoods],before:ta1,after:ta2,moment:ta3,savedAt:Date.now()};
+      if(!u.journal) u.journal=[];
+      u.journal.unshift(entry); if(u.journal.length>50)u.journal.length=50;
+      saveUser(u);
+    }
+    const msg=document.getElementById('journalSavedMsg'); msg.classList.add('visible'); setTimeout(()=>msg.classList.remove('visible'),3000);
+  }
+  function resetApp() { selectedMoods.clear();lastAlbum=null;currentAlbum=null; document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected')); document.getElementById('selectionHint').innerHTML='Select at least one mood to continue'; document.getElementById('generateBtn').disabled=true; hideResult(); window.scrollTo({top:0,behavior:'smooth'}); }
+  const CREATURE_MOODS = [
+    {moods:['happy','excited','energetic'],id:'puppy',anim:'creature-hop'},
+    {moods:['happy','excited'],id:'bunny',anim:'creature-wiggle'},
+    {moods:['happy','energetic'],id:'pig',anim:'creature-bounce'},
+    {moods:['excited','energetic'],id:'duck',anim:'creature-spin'},
+    {moods:['happy','calm'],id:'sheep',anim:'creature-nod'},
+    {moods:['happy','peaceful'],id:'panda',anim:'creature-sway'},
+    {moods:['angry','energetic'],id:'fox',anim:'creature-shake'},
+    {moods:['angry','rebellious'],id:'cat',anim:'creature-shake'},
+    {moods:['anxious','restless'],id:'hamster',anim:'creature-jitter'},
+    {moods:['anxious','overwhelmed'],id:'mouse',anim:'creature-peek'},
+    {moods:['calm','peaceful'],id:'panda',anim:'creature-float'},
+    {moods:['calm','focused'],id:'owl',anim:'creature-nod'},
+    {moods:['romantic','dreamy'],id:'butterfly',anim:'creature-swoon'},
+    {moods:['romantic','tender'],id:'bunny',anim:'creature-swoon'},
+    {moods:['sad','melancholic'],id:'bear',anim:'creature-sway-slow'},
+    {moods:['sad','lonely'],id:'bear',anim:'creature-drift'},
+    {moods:['nostalgic','grateful'],id:'fox',anim:'creature-sway'},
+    {moods:['nostalgic','longing'],id:'bird',anim:'creature-drift'},
+    {moods:['hopeful','calm'],id:'bird',anim:'creature-float'},
+    {moods:['hopeful','grateful'],id:'bunny',anim:'creature-pulse'},
+    {moods:['euphoric'],id:'puppy',anim:'creature-hop'},
+    {moods:['happy'],id:'bunny',anim:'creature-sway'},
+    {moods:['excited'],id:'duck',anim:'creature-wiggle'},
+    {moods:['energetic'],id:'pig',anim:'creature-bounce'},
+    {moods:['angry'],id:'cat',anim:'creature-shake'},
+    {moods:['anxious'],id:'hamster',anim:'creature-jitter'},
+    {moods:['calm'],id:'sheep',anim:'creature-float'},
+    {moods:['peaceful'],id:'panda',anim:'creature-sway'},
+    {moods:['romantic'],id:'butterfly',anim:'creature-swoon'},
+    {moods:['sad'],id:'bear',anim:'creature-sway-slow'},
+    {moods:['melancholic'],id:'bear',anim:'creature-drift'},
+    {moods:['nostalgic'],id:'fox',anim:'creature-sway'},
+    {moods:['hopeful'],id:'bird',anim:'creature-float'},
+    {moods:['focused'],id:'owl',anim:'creature-nod'},
+    {moods:['tender'],id:'bunny',anim:'creature-swoon'},
+    {moods:['dreamy'],id:'butterfly',anim:'creature-drift'},
+    {moods:['grateful'],id:'bunny',anim:'creature-pulse'},
+    {moods:['lonely'],id:'bear',anim:'creature-sway-slow'},
+    {moods:['rebellious'],id:'fox',anim:'creature-shake'},
+    {moods:['contemplative'],id:'owl',anim:'creature-nod'},
+    {moods:['happy','sad','nostalgic'],id:'fox',anim:'creature-drift'},
+    {moods:['peaceful','calm'],id:'sheep',anim:'creature-float'},
+    {moods:['focused','calm'],id:'owl',anim:'creature-nod'},
+    {moods:['rebellious','energetic'],id:'fox',anim:'creature-wiggle'},
+    {moods:['lonely','melancholic'],id:'bear',anim:'creature-drift'},
+    {moods:['heartbroken'],id:'bear',anim:'creature-sway-slow'},
+    {moods:['euphoric','excited'],id:'puppy',anim:'creature-hop'},
+    {moods:['overwhelmed'],id:'mouse',anim:'creature-peek'},
+    {moods:['restless'],id:'hamster',anim:'creature-jitter'},
+    {moods:['dreamy','calm'],id:'butterfly',anim:'creature-drift'},
+    {moods:['vulnerable'],id:'bunny',anim:'creature-swoon'},
+    {moods:['numb'],id:'bear',anim:'creature-sway-slow'},
+    {moods:['wistful'],id:'fox',anim:'creature-sway'},
+    {moods:['longing'],id:'bird',anim:'creature-drift'},
+    {moods:['bittersweet'],id:'fox',anim:'creature-drift'},
+    {moods:['grateful'],id:'bunny',anim:'creature-pulse'},
+  ].sort((a,b)=>b.moods.length-a.moods.length);
+  const CREATURE_SVG = {
+    bunny:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="58" rx="36" ry="38" fill="#fff5f0"/><ellipse cx="50" cy="20" rx="8" ry="22" fill="#fff5f0"/><ellipse cx="28" cy="22" rx="6" ry="18" fill="#fff5f0" transform="rotate(-25 28 22)"/><ellipse cx="72" cy="22" rx="6" ry="18" fill="#fff5f0" transform="rotate(25 72 22)"/><circle cx="38" cy="52" r="10" fill="#2d2d2d"/><circle cx="62" cy="52" r="10" fill="#2d2d2d"/><circle cx="41" cy="49" r="4" fill="#fff"/><circle cx="65" cy="49" r="4" fill="#fff"/><ellipse cx="50" cy="68" rx="6" ry="4" fill="#e8a0a0"/><path d="M42 72 Q50 78 58 72" stroke="#2d2d2d" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="32" cy="62" rx="10" ry="5" fill="rgba(255,180,180,.6)"/><ellipse cx="68" cy="62" rx="10" ry="5" fill="rgba(255,180,180,.6)"/></svg>`,
+    puppy:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="38" ry="40" fill="#f5e6d3"/><ellipse cx="35" cy="35" rx="12" ry="18" fill="#f5e6d3" transform="rotate(-30 35 35)"/><ellipse cx="65" cy="35" rx="12" ry="18" fill="#f5e6d3" transform="rotate(30 65 35)"/><circle cx="36" cy="50" r="11" fill="#2d2d2d"/><circle cx="64" cy="50" r="11" fill="#2d2d2d"/><circle cx="40" cy="47" r="5" fill="#fff"/><circle cx="68" cy="47" r="5" fill="#fff"/><ellipse cx="50" cy="72" rx="8" ry="5" fill="#d4a574"/><path d="M44 68 Q50 74 56 68" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="30" cy="60" rx="12" ry="6" fill="rgba(255,180,150,.6)"/><ellipse cx="70" cy="60" rx="12" ry="6" fill="rgba(255,180,150,.6)"/></svg>`,
+    pig:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="40" ry="42" fill="#ffd4e5"/><ellipse cx="50" cy="28" rx="14" ry="16" fill="#ffd4e5"/><ellipse cx="50" cy="22" rx="6" ry="5" fill="#ffb8d4"/><circle cx="34" cy="50" r="12" fill="#2d2d2d"/><circle cx="66" cy="50" r="12" fill="#2d2d2d"/><circle cx="38" cy="47" r="5" fill="#fff"/><circle cx="70" cy="47" r="5" fill="#fff"/><path d="M38 68 Q50 76 62 68" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="62" rx="14" ry="7" fill="rgba(255,150,180,.7)"/><ellipse cx="72" cy="62" rx="14" ry="7" fill="rgba(255,150,180,.7)"/></svg>`,
+    duck:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="38" ry="40" fill="#ffeb3b"/><ellipse cx="72" cy="48" rx="14" ry="16" fill="#ffeb3b"/><path d="M82 46 L92 42 L88 50 Z" fill="#ff9800"/><circle cx="34" cy="50" r="11" fill="#2d2d2d"/><circle cx="62" cy="50" r="11" fill="#2d2d2d"/><circle cx="38" cy="47" r="5" fill="#fff"/><circle cx="66" cy="47" r="5" fill="#fff"/><path d="M40 68 Q50 74 60 68" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="30" cy="60" rx="10" ry="5" fill="rgba(255,180,100,.5)"/><ellipse cx="58" cy="60" rx="10" ry="5" fill="rgba(255,180,100,.5)"/></svg>`,
+    sheep:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="58" rx="36" ry="38" fill="#fff"/><ellipse cx="50" cy="58" rx="32" ry="34" fill="#f0f0f0"/><circle cx="38" cy="52" r="10" fill="#2d2d2d"/><circle cx="62" cy="52" r="10" fill="#2d2d2d"/><circle cx="41" cy="49" r="4" fill="#fff"/><circle cx="65" cy="49" r="4" fill="#fff"/><path d="M34 46 Q38 50 42 46" stroke="#2d2d2d" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M58 46 Q62 50 66 46" stroke="#2d2d2d" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M40 68 Q50 74 60 68" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="60" rx="8" ry="4" fill="rgba(255,200,200,.5)"/><ellipse cx="72" cy="60" rx="8" ry="4" fill="rgba(255,200,200,.5)"/></svg>`,
+    panda:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="38" ry="40" fill="#fff"/><ellipse cx="28" cy="32" rx="14" ry="16" fill="#2d2d2d"/><ellipse cx="72" cy="32" rx="14" ry="16" fill="#2d2d2d"/><ellipse cx="38" cy="38" rx="6" ry="8" fill="#2d2d2d"/><ellipse cx="62" cy="38" rx="6" ry="8" fill="#2d2d2d"/><circle cx="36" cy="52" r="9" fill="#2d2d2d"/><circle cx="64" cy="52" r="9" fill="#2d2d2d"/><circle cx="39" cy="50" r="3" fill="#fff"/><circle cx="67" cy="50" r="3" fill="#fff"/><path d="M42 68 Q50 74 58 68" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="60" rx="10" ry="5" fill="rgba(255,180,180,.5)"/><ellipse cx="72" cy="60" rx="10" ry="5" fill="rgba(255,180,180,.5)"/></svg>`,
+    fox:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="38" ry="40" fill="#ff9a56"/><path d="M22 30 L28 18 L34 28 Z" fill="#ff9a56"/><path d="M78 30 L72 18 L66 28 Z" fill="#ff9a56"/><ellipse cx="50" cy="28" rx="6" ry="8" fill="#fff"/><circle cx="36" cy="50" r="10" fill="#2d2d2d"/><circle cx="64" cy="50" r="10" fill="#2d2d2d"/><circle cx="40" cy="47" r="4" fill="#fff"/><circle cx="68" cy="47" r="4" fill="#fff"/><path d="M40 68 Q50 62 60 68" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="60" rx="10" ry="5" fill="rgba(255,150,120,.5)"/><ellipse cx="72" cy="60" rx="10" ry="5" fill="rgba(255,150,120,.5)"/></svg>`,
+    cat:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="38" ry="40" fill="#ffd4a0"/><path d="M30 28 L34 12 L38 26" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M70 28 L66 12 L62 26" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><line x1="42" y1="48" x2="38" y2="58" stroke="#2d2d2d" stroke-width="1.5"/><line x1="48" y1="46" x2="50" y2="58" stroke="#2d2d2d" stroke-width="1.5"/><line x1="54" y1="48" x2="58" y2="58" stroke="#2d2d2d" stroke-width="1.5"/><circle cx="36" cy="50" r="10" fill="#2d2d2d"/><circle cx="64" cy="50" r="10" fill="#2d2d2d"/><circle cx="40" cy="47" r="4" fill="#fff"/><circle cx="68" cy="47" r="4" fill="#fff"/><path d="M38 66 Q50 58 62 66" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="60" rx="10" ry="5" fill="rgba(255,180,150,.5)"/><ellipse cx="72" cy="60" rx="10" ry="5" fill="rgba(255,180,150,.5)"/></svg>`,
+    hamster:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="58" rx="40" ry="42" fill="#e8d4a0"/><ellipse cx="38" cy="52" rx="14" ry="12" fill="#d4c090"/><ellipse cx="62" cy="52" rx="14" ry="12" fill="#d4c090"/><circle cx="34" cy="48" r="9" fill="#2d2d2d"/><circle cx="66" cy="48" r="9" fill="#2d2d2d"/><circle cx="37" cy="45" r="3" fill="#fff"/><circle cx="69" cy="45" r="3" fill="#fff"/><path d="M42 66 Q50 70 58 66" stroke="#2d2d2d" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M32 44 Q36 40 40 44" stroke="#2d2d2d" stroke-width="1" fill="none"/><path d="M60 44 Q64 40 68 44" stroke="#2d2d2d" stroke-width="1" fill="none"/><ellipse cx="28" cy="58" rx="10" ry="5" fill="rgba(255,200,150,.5)"/><ellipse cx="72" cy="58" rx="10" ry="5" fill="rgba(255,200,150,.5)"/></svg>`,
+    mouse:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="58" rx="34" ry="36" fill="#e0d8e8"/><ellipse cx="50" cy="32" rx="8" ry="10" fill="#e0d8e8"/><circle cx="36" cy="52" r="9" fill="#2d2d2d"/><circle cx="64" cy="52" r="9" fill="#2d2d2d"/><circle cx="39" cy="49" r="4" fill="#fff"/><circle cx="67" cy="49" r="4" fill="#fff"/><path d="M42 66 Q50 70 58 66" stroke="#2d2d2d" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="58" rx="8" ry="4" fill="rgba(255,200,220,.5)"/><ellipse cx="72" cy="58" rx="8" ry="4" fill="rgba(255,200,220,.5)"/></svg>`,
+    bear:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="38" ry="40" fill="#d4c4a8"/><ellipse cx="28" cy="32" rx="12" ry="14" fill="#d4c4a8"/><ellipse cx="72" cy="32" rx="12" ry="14" fill="#d4c4a8"/><circle cx="36" cy="50" r="10" fill="#2d2d2d"/><circle cx="64" cy="50" r="10" fill="#2d2d2d"/><circle cx="39" cy="47" r="4" fill="#fff"/><circle cx="67" cy="47" r="4" fill="#fff"/><path d="M42 68 Q50 62 58 68" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="60" rx="10" ry="5" fill="rgba(255,180,180,.4)"/><ellipse cx="72" cy="60" rx="10" ry="5" fill="rgba(255,180,180,.4)"/></svg>`,
+    bird:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="36" ry="38" fill="#87ceeb"/><path d="M72 48 Q80 44 78 52 Q76 56 72 54" fill="#ff9800"/><circle cx="36" cy="52" r="11" fill="#2d2d2d"/><circle cx="62" cy="52" r="11" fill="#2d2d2d"/><circle cx="40" cy="49" r="5" fill="#fff"/><circle cx="66" cy="49" r="5" fill="#fff"/><path d="M40 68 Q50 74 60 68" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="58" rx="10" ry="5" fill="rgba(255,220,200,.5)"/><ellipse cx="72" cy="58" rx="10" ry="5" fill="rgba(255,220,200,.5)"/></svg>`,
+    butterfly:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="28" ry="36" fill="#ffb8e0"/><path d="M22 40 Q10 30 18 50 Q26 45 22 40" fill="#ff80c0"/><path d="M78 40 Q90 30 82 50 Q74 45 78 40" fill="#ff80c0"/><path d="M22 56 Q8 56 16 70 Q24 62 22 56" fill="#ff80c0"/><path d="M78 56 Q92 56 84 70 Q76 62 78 56" fill="#ff80c0"/><circle cx="42" cy="52" r="8" fill="#2d2d2d"/><circle cx="58" cy="52" r="8" fill="#2d2d2d"/><circle cx="44" cy="50" r="3" fill="#fff"/><circle cx="60" cy="50" r="3" fill="#fff"/><path d="M44 64 Q50 68 56 64" stroke="#e84a6f" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="32" cy="58" rx="8" ry="4" fill="rgba(255,180,220,.6)"/><ellipse cx="68" cy="58" rx="8" ry="4" fill="rgba(255,180,220,.6)"/></svg>`,
+    owl:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="38" ry="40" fill="#c4a878"/><ellipse cx="36" cy="48" r="14" ry="16" fill="#2d2d2d"/><ellipse cx="64" cy="48" r="14" ry="16" fill="#2d2d2d"/><circle cx="38" cy="48" r="6" fill="#fff"/><circle cx="66" cy="48" r="6" fill="#fff"/><circle cx="40" cy="46" r="2" fill="#2d2d2d"/><circle cx="68" cy="46" r="2" fill="#2d2d2d"/><path d="M44 64 Q50 58 56 64" stroke="#2d2d2d" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M50 28 L48 22 L52 22 Z" fill="#8b7355"/><ellipse cx="28" cy="58" rx="8" ry="4" fill="rgba(255,220,180,.4)"/><ellipse cx="72" cy="58" rx="8" ry="4" fill="rgba(255,220,180,.4)"/></svg>`,
+    default:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="38" ry="40" fill="#c4b5fd"/><circle cx="36" cy="50" r="11" fill="#2d2d2d"/><circle cx="64" cy="50" r="11" fill="#2d2d2d"/><circle cx="40" cy="47" r="5" fill="#fff"/><circle cx="68" cy="47" r="5" fill="#fff"/><path d="M40 68 Q50 74 60 68" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="60" rx="10" ry="5" fill="rgba(255,220,255,.5)"/><ellipse cx="72" cy="60" rx="10" ry="5" fill="rgba(255,220,255,.5)"/></svg>`,
+  };
+  function getCreatureForMoods(moods) {
+    const expanded=new Set();
+    moods.forEach(m=>{ expanded.add(m); if(NUANCED_MOOD_BASE_MAP[m]) NUANCED_MOOD_BASE_MAP[m].forEach(b=>expanded.add(b)); });
+    for(const c of CREATURE_MOODS){
+      if(c.moods.every(m=>expanded.has(m))) return {id:c.id,anim:c.anim};
+    }
+    return {id:'default',anim:'creature-sway'};
+  }
+  function showLoading(on,moods) {
+    const overlay=document.getElementById('loadingOverlay');
+    overlay.classList.toggle('active',on);
+    if(on&&moods&&moods.length){
+      const {id,anim}=getCreatureForMoods(moods);
+      const el=document.getElementById('loadingCreature');
+      el.className='loading-creature '+anim;
+      el.innerHTML='<div class="creature-notes"><span class="creature-note n1">♪</span><span class="creature-note n2">♫</span><span class="creature-note n3">♪</span><span class="creature-note n4">♫</span></div>'+(CREATURE_SVG[id]||CREATURE_SVG.default);
+    }else if(!on){
+      document.getElementById('loadingCreature').className='loading-creature';
+      document.getElementById('loadingCreature').innerHTML='';
+    }
+  }
+
+  /* ================================================================
+     SETTINGS
+  ================================================================ */
+  function openSettings() {
+    const creds=getSpotifyCreds();
+    if(creds){document.getElementById('spotifyClientId').value=creds.clientId;document.getElementById('spotifyClientSecret').value=creds.clientSecret;}
+    updateSpotifyStatusUI(!!creds&&!!spotifyToken);
+    document.getElementById('m-settings').classList.add('active');
+  }
+  function closeSettings() { document.getElementById('m-settings').classList.remove('active'); }
+  async function saveSpotifySettings() {
+    const cid=document.getElementById('spotifyClientId').value.trim();
+    const sec=document.getElementById('spotifyClientSecret').value.trim();
+    if(!cid||!sec){alert('Please enter both Client ID and Client Secret.');return;}
+    saveSpotifyCreds(cid,sec);
+    document.getElementById('spotifyStatusText').textContent='Testing connection…';
+    const token=await getSpotifyToken();
+    updateSpotifyStatusUI(!!token);
+    updateSettingsBtn();
+    if(token) loadNewReleases();
+    else alert('Could not connect to Spotify. Please check your credentials and make sure http://localhost:3000 is added as a Redirect URI in your Spotify app settings.');
+  }
+  function clearSpotifySettings() { clearSpotifyCreds(); updateSpotifyStatusUI(false); updateSettingsBtn(); document.getElementById('spotifyClientId').value=''; document.getElementById('spotifyClientSecret').value=''; document.getElementById('nrSection').style.display='none'; }
+  function updateSpotifyStatusUI(connected) { const badge=document.getElementById('spotifyStatusBadge'),txt=document.getElementById('spotifyStatusText'); badge.className='spotify-status '+(connected?'connected':'disconnected'); txt.textContent=connected?'Connected to Spotify':'Not connected'; }
+  function updateSettingsBtn() { const creds=getSpotifyCreds(); const btn=document.getElementById('settingsBtn'); btn.classList.toggle('spotify-on',!!creds); }
+
+  /* ================================================================
+     SAVED ALBUMS
+  ================================================================ */
+  function updateSaveButton() { const u=getCurrentUser();if(!u||!currentAlbum)return; const saved=u.savedAlbums.some(a=>a.title===currentAlbum.title); const btn=document.getElementById('saveBtn'); btn.classList.toggle('saved',saved); btn.textContent=saved?'♥ Saved':'♡ Save Album'; }
+  function toggleSave() {
+    const u=getCurrentUser();if(!u||!currentAlbum)return;
+    const idx=u.savedAlbums.findIndex(a=>a.title===currentAlbum.title);
+    if(idx>=0){u.savedAlbums.splice(idx,1);}
+    else{const img=document.getElementById('artImg');u.savedAlbums.push({...currentAlbum,savedAt:Date.now(),artUrl:img.classList.contains('loaded')?img.src:null,moods:[...selectedMoods]});}
+    saveUser(u);updateSaveButton();updateSavedCount();
+  }
+  function updateSavedCount() { const u=getCurrentUser();const n=u?u.savedAlbums.length:0; const b=document.getElementById('savedBadge');b.textContent=n;b.style.display=n>0?'inline':'none'; }
+  function openSaved() { renderSavedList(); document.getElementById('m-saved').classList.add('active'); }
+  function closeSaved() { document.getElementById('m-saved').classList.remove('active'); }
+  function renderSavedList() {
+    const u=getCurrentUser(),list=document.getElementById('savedList');
+    if(!u||!u.savedAlbums.length){list.innerHTML='<p class="saved-empty">No saved albums yet.<br>Generate an album and tap ♡ Save Album to collect it here.</p>';return;}
+    list.innerHTML=[...u.savedAlbums].reverse().map(a=>`<div class="saved-item">${a.artUrl?`<img class="saved-art" src="${escHtml(a.artUrl)}" alt="${escHtml(a.title)}" onerror="this.outerHTML='<div class=saved-art-ph>🎵</div>'" />`:'<div class="saved-art-ph">🎵</div>'}<div class="saved-info"><p class="saved-title">${escHtml(a.title)}</p><p class="saved-artist">${escHtml(a.artist)}</p><p class="saved-genre">${escHtml(a.genre)}</p></div><button class="saved-remove" data-title="${escHtml(a.title)}" onclick="removeSaved(this.dataset.title)">✕</button></div>`).join('');
+  }
+  function removeSaved(title) { const u=getCurrentUser();if(!u)return; u.savedAlbums=u.savedAlbums.filter(a=>a.title!==title);saveUser(u);updateSavedCount();renderSavedList();if(currentAlbum&&currentAlbum.title===title)updateSaveButton(); }
+
+  /* ================================================================
+     MY MUSIC PROFILE (analytics by mood)
+  ================================================================ */
+  function openProfile() { renderProfile(); document.getElementById('m-profile').classList.add('active'); }
+  function closeProfile() { document.getElementById('m-profile').classList.remove('active'); }
+  function renderProfile() {
+    const u=getCurrentUser(), body=document.getElementById('profileBody');
+    if(!u){body.innerHTML='';return;}
+    const albums=(u.savedAlbums||[]).filter(a=>a.moods&&a.moods.length);
+    const songs=(u.savedSongs||[]).filter(s=>s.moods&&s.moods.length);
+    const allMoodKeys=new Set();
+    albums.forEach(a=>a.moods.forEach(m=>allMoodKeys.add(m)));
+    songs.forEach(s=>s.moods.forEach(m=>allMoodKeys.add(m)));
+    const moodCounts={};
+    [...allMoodKeys].forEach(m=>{ moodCounts[m]=0; albums.forEach(a=>{if(a.moods.includes(m))moodCounts[m]++;}); songs.forEach(s=>{if(s.moods.includes(m))moodCounts[m]++;}); });
+    const sortedMoods=[...allMoodKeys].sort((a,b)=>moodCounts[b]-moodCounts[a]);
+    if(!albums.length&&!songs.length){
+      const hasAny=(u.savedAlbums?.length||0)+(u.savedSongs?.length||0)>0;
+      body.innerHTML=hasAny
+        ?'<p class="profile-empty">Your saved music doesn\'t have mood data yet.<br>Generate new albums, heart songs, and save albums — we\'ll track what you listen to when you feel each way.</p>'
+        :'<p class="profile-empty">No mood-tagged music yet.<br>Generate albums, heart songs, and save albums — we\'ll track what you listen to when you feel each way.</p>';
+      return;
+    }
+    const moodCards=sortedMoods.map(m=>{
+      const mInfo=allMoods().find(x=>x.id===m)||{emoji:'🎵',name:m};
+      const mAlbums=albums.filter(a=>a.moods.includes(m));
+      const mSongs=songs.filter(s=>s.moods.includes(m));
+      const items=[...mAlbums.map(a=>`<div class="profile-mood-item"><strong>${escHtml(a.title)}</strong> — ${escHtml(a.artist)}</div>`),...mSongs.map(s=>`<div class="profile-mood-item">♫ ${escHtml(s.songName)} <span style="opacity:.7">· ${escHtml(s.albumArtist)}</span></div>`)].slice(0,8);
+      const more=mAlbums.length+mSongs.length-items.length;
+      return `<div class="profile-mood-card"><div class="profile-mood-emoji">${mInfo.emoji||'🎵'}</div><div class="profile-mood-name">${escHtml(mInfo.name||m)}</div><div class="profile-mood-count">${moodCounts[m]} saved</div><div class="profile-mood-items">${items.join('')}${more>0?`<div class="profile-mood-item" style="opacity:.7">+${more} more</div>`:''}</div></div>`;
+    }).join('');
+    body.innerHTML=`<div class="profile-stats"><div class="profile-stat"><div class="profile-stat-num">${albums.length}</div><div class="profile-stat-label">Albums</div></div><div class="profile-stat"><div class="profile-stat-num">${songs.length}</div><div class="profile-stat-label">Songs</div></div><div class="profile-stat"><div class="profile-stat-num">${sortedMoods.length}</div><div class="profile-stat-label">Moods</div></div></div><div class="profile-mood-grid">${moodCards}</div>`;
+  }
+  /* ================================================================
+     UTILS
+  ================================================================ */
+  function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+  init();
+  </script>
+</body>
+</html>
