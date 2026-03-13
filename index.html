@@ -80,23 +80,37 @@
     .creature-drift { animation:animDrift 3.6s ease-in-out infinite; }
     .creature-peek { animation:animPeek 3s ease-in-out infinite; }
 
-    /* ── Auth ── */
-    .auth-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
-    .auth-card { background:var(--glass); border:1px solid var(--glass-border); border-radius:28px; backdrop-filter:blur(24px); padding:48px 40px; max-width:440px; width:100%; text-align:center; box-shadow:0 24px 64px rgba(0,0,0,.4); }
-    .auth-vinyl { width:64px; height:64px; margin:0 auto 20px; animation:spin 9s linear infinite; filter:drop-shadow(0 0 16px var(--glow)); }
-    .auth-card h1 { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:700; letter-spacing:-.02em; margin-bottom:8px; background:linear-gradient(135deg,var(--text-1) 30%,var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-    .auth-sub { font-size:.9rem; color:var(--text-2); font-weight:500; letter-spacing:.03em; }
-    .auth-form { display:flex; flex-direction:column; gap:12px; margin:28px 0 24px; }
-    .auth-input { width:100%; padding:16px 20px; background:rgba(255,255,255,.08); border:1px solid var(--glass-border); border-radius:14px; color:var(--text-1); font-family:inherit; font-size:1rem; outline:none; transition:all .25s; }
+    /* ── Landing / Auth ── */
+    .auth-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:32px 24px; }
+    .auth-card { background:var(--glass); border:1px solid var(--glass-border); border-radius:28px; backdrop-filter:blur(24px); padding:48px 44px; max-width:520px; width:100%; text-align:center; box-shadow:0 24px 64px rgba(0,0,0,.4); }
+    .auth-headline { font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,2.8rem); font-weight:700; letter-spacing:-.03em; line-height:1.15; margin-bottom:20px; background:linear-gradient(135deg,var(--text-1) 25%,var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .auth-bullets { list-style:none; text-align:left; margin:0 0 28px; padding:0; }
+    .auth-bullets li { display:flex; align-items:center; gap:12px; padding:10px 0; font-size:.95rem; color:var(--text-2); font-weight:500; }
+    .auth-bullets li::before { content:'✓'; color:var(--accent); font-weight:700; font-size:1.1rem; }
+    .auth-cta { width:100%; padding:18px 32px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; border-radius:16px; color:#fff; font-family:inherit; font-size:1.1rem; font-weight:700; letter-spacing:.03em; cursor:pointer; transition:all .3s var(--ease); box-shadow:0 10px 32px var(--glow); }
+    .auth-cta:hover { box-shadow:0 16px 40px var(--glow); filter:brightness(1.08); }
+    .auth-preview { display:flex; align-items:center; gap:16px; margin-top:32px; padding:16px 20px; background:rgba(255,255,255,.05); border:1px solid var(--glass-border); border-radius:16px; text-align:left; }
+    .auth-preview-art { width:64px; height:64px; border-radius:12px; background:linear-gradient(135deg,var(--bg-2),var(--bg-3)); display:flex; align-items:center; justify-content:center; font-size:1.8rem; flex-shrink:0; }
+    .auth-preview-info { flex:1; min-width:0; }
+    .auth-preview-title { font-weight:700; font-size:.9rem; color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .auth-preview-artist { font-size:.78rem; color:var(--text-3); margin-top:2px; }
+    .auth-preview-tag { font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-top:6px; }
+    .auth-signin { margin-top:24px; padding-top:20px; border-top:1px solid var(--glass-border); }
+    .auth-signin-text { font-size:.8rem; color:var(--text-3); margin-bottom:12px; }
+    .auth-form { display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+    .auth-input { width:100%; padding:14px 18px; background:rgba(255,255,255,.08); border:1px solid var(--glass-border); border-radius:12px; color:var(--text-1); font-family:inherit; font-size:.95rem; outline:none; transition:all .25s; }
     .auth-input:focus { border-color:var(--accent); background:rgba(255,255,255,.12); box-shadow:0 0 0 3px var(--glow); }
     .auth-input::placeholder { color:var(--text-3); }
-    .auth-btn { width:100%; padding:16px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; border-radius:14px; color:#fff; font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer; transition:all .3s var(--ease); box-shadow:0 8px 24px var(--glow); }
-    .auth-btn:hover { box-shadow:0 14px 32px var(--glow); filter:brightness(1.08); }
+    .auth-btn { padding:12px 24px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; border-radius:12px; color:#fff; font-family:inherit; font-size:.88rem; font-weight:700; cursor:pointer; transition:all .25s; }
+    .auth-btn:hover { filter:brightness(1.08); }
     .auth-divider { font-size:.7rem; color:var(--text-3); letter-spacing:.12em; text-transform:uppercase; margin-bottom:12px; }
     .user-chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
     .user-chip { display:flex; align-items:center; gap:8px; padding:8px 16px; background:var(--glass); border:1px solid rgba(255,255,255,.22); border-radius:999px; color:var(--text-1); font-family:inherit; font-size:.82rem; font-weight:600; cursor:pointer; transition:all .25s; }
     .user-chip:hover { background:rgba(255,255,255,.14); border-color:var(--accent); color:var(--text-1); }
     .chip-avatar { width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:700; color:#fff; flex-shrink:0; }
+    .auth-signin-link { text-align:center; }
+    .auth-link-btn { background:none; border:none; color:var(--text-3); font-size:.8rem; cursor:pointer; text-decoration:underline; font-family:inherit; padding:0; }
+    .auth-link-btn:hover { color:var(--accent); }
 
     /* ── Onboarding ── */
     .ob-wrap { max-width:940px; margin:0 auto; padding:40px 24px 80px; }
@@ -408,28 +422,34 @@
     <p class="loading-text" id="loadingText">Finding your perfect album…</p>
   </div>
 
-  <!-- AUTH -->
+  <!-- LANDING -->
   <div id="s-auth" class="screen active">
     <div class="auth-wrap">
       <div class="auth-card">
-        <svg class="auth-vinyl" viewBox="0 0 100 100" fill="none">
-          <circle cx="50" cy="50" r="48" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
-          <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,.07)" stroke-width="1" fill="none"/>
-          <circle cx="50" cy="50" r="34" fill="rgba(0,0,0,.55)"/>
-          <circle cx="50" cy="50" r="14" fill="rgba(255,255,255,.1)"/>
-          <circle cx="50" cy="50" r="6" fill="rgba(255,255,255,.9)"/>
-        </svg>
-        <h1>Album of the Day</h1>
-        <p class="auth-sub">Your mood. Your moment. Your music.</p>
-        <div class="auth-form">
-          <input class="auth-input" type="text" id="usernameInput"
-            placeholder="Enter your name to get started…" autocomplete="off"
-            onkeydown="if(event.key==='Enter') handleAuth()" />
-          <button class="auth-btn" onclick="handleAuth()">Get Started →</button>
-          <div class="auth-or"><div class="auth-or-line"></div><span class="auth-or-text">or</span><div class="auth-or-line"></div></div>
-          <button class="auth-guest-btn" onclick="handleGuestMode()">Explore as a Guest →</button>
+        <h1 class="auth-headline">The perfect album for how you feel right now</h1>
+        <ul class="auth-bullets">
+          <li>Tell us your mood</li>
+          <li>Get the perfect album</li>
+          <li>Reflect on the music</li>
+        </ul>
+        <button class="auth-cta" onclick="handleGuestMode()">Find My Album</button>
+        <div class="auth-preview">
+          <div class="auth-preview-art">🎵</div>
+          <div class="auth-preview-info">
+            <p class="auth-preview-title">Rumours</p>
+            <p class="auth-preview-artist">Fleetwood Mac · 1977</p>
+            <p class="auth-preview-tag">Example recommendation</p>
+          </div>
         </div>
-        <div id="existingUsersWrap" style="display:none">
+        <div id="authSigninWrap" class="auth-signin" style="display:none">
+          <p class="auth-signin-text">Sign in to save your albums</p>
+          <div class="auth-form">
+            <input class="auth-input" type="text" id="usernameInput" placeholder="Enter your name…" autocomplete="off" onkeydown="if(event.key==='Enter') handleAuth()" />
+            <button class="auth-btn" onclick="handleAuth()">Sign In</button>
+          </div>
+        </div>
+        <p id="authSigninLink" class="auth-signin-link" style="display:none;margin-top:20px;"><button type="button" class="auth-link-btn" onclick="document.getElementById('authSigninWrap').style.display='block';this.parentElement.style.display='none'">Sign in to save your albums</button></p>
+        <div id="existingUsersWrap" class="auth-signin" style="display:none">
           <p class="auth-divider">or continue as</p>
           <div class="user-chips" id="existingUserChips"></div>
         </div>
@@ -1184,11 +1204,17 @@
      AUTH
   ================================================================ */
   function renderAuthScreen() {
-    const users=getAllUsers(), wrap=document.getElementById('existingUsersWrap');
+    const users=getAllUsers(), wrap=document.getElementById('existingUsersWrap'), signinWrap=document.getElementById('authSigninWrap'), signinLink=document.getElementById('authSigninLink');
+    signinWrap.style.display='none';
+    signinLink.style.display='none';
     if(users.length>0){
       wrap.style.display='block';
+      signinLink.style.display='none';
       document.getElementById('existingUserChips').innerHTML=users.map(u=>`<button class="user-chip" onclick="quickLogin('${u.id}')"><div class="chip-avatar">${u.displayName.charAt(0).toUpperCase()}</div>${escHtml(u.displayName)}</button>`).join('');
-    } else { wrap.style.display='none'; }
+    } else {
+      wrap.style.display='none';
+      signinLink.style.display='block';
+    }
   }
   function handleAuth() { const inp=document.getElementById('usernameInput'),name=inp.value.trim(); if(!name){inp.focus();return;} inp.value=''; afterAuth(createOrLogin(name)); }
   function quickLogin(id) { const s=loadStore();s.current=id;saveStore(s);afterAuth(getCurrentUser()); }
