@@ -252,6 +252,19 @@
     .album-title { font-family:'Playfair Display',serif; font-size:clamp(1.45rem,3vw,2rem); font-weight:700; line-height:1.2; color:var(--text-1); margin-bottom:6px; }
     .album-artist { font-size:.93rem; color:var(--text-2); font-weight:400; margin-bottom:18px; }
     .album-vibe { font-family:'Playfair Display',serif; font-style:italic; font-size:.88rem; color:var(--text-2); line-height:1.75; padding:14px 16px; background:rgba(255,255,255,.05); border-left:2.5px solid var(--accent); border-radius:0 10px 10px 0; margin-bottom:14px; transition:border-color 1.2s; }
+    .album-narrative { font-size:.85rem; color:var(--text-2); line-height:1.7; padding:16px 18px; background:rgba(255,255,255,.04); border-radius:12px; margin-bottom:14px; border:1px solid rgba(255,255,255,.08); }
+    .album-narrative p { margin:0 0 10px; }
+    .album-narrative p:last-child { margin-bottom:0; }
+    .album-narrative .narr-label { font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:4px; }
+    .album-why-matters { padding:18px 20px; background:rgba(255,255,255,.06); border-radius:14px; margin-bottom:14px; border:1px solid rgba(255,255,255,.1); }
+    .album-why-matters .why-matters-title { font-size:.75rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin:0 0 14px; }
+    .album-why-matters .why-matters-meta { font-size:.78rem; color:var(--text-3); margin-bottom:12px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .album-why-matters .why-matters-meta .year { font-weight:600; color:var(--text-2); }
+    .album-why-matters .why-matters-meta .genre-tags { display:flex; flex-wrap:wrap; gap:6px; }
+    .album-why-matters .why-matters-meta .genre-tag { padding:2px 8px; background:rgba(255,255,255,.1); border-radius:6px; font-size:.7rem; color:var(--text-2); }
+    .album-why-matters .why-matters-historical { font-size:.85rem; color:var(--text-2); line-height:1.7; margin:0 0 12px; }
+    .album-why-matters .why-matters-similar, .album-why-matters .why-matters-standout { font-size:.82rem; color:var(--text-2); line-height:1.6; margin:0; }
+    .album-why-matters .why-matters-similar strong, .album-why-matters .why-matters-standout strong { font-size:.72rem; color:var(--text-3); font-weight:600; letter-spacing:.05em; }
     .album-why { font-size:.8rem; color:var(--text-3); line-height:1.65; margin-bottom:6px; }
     .spotify-embed-wrap { padding:0 24px 20px; border-top:1px solid var(--glass-border); margin-top:4px; padding-top:20px; }
     .spotify-embed-wrap iframe { width:100%; height:152px; border-radius:12px; border:none; }
@@ -367,6 +380,28 @@
     .profile-stat { padding:16px 24px; background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; }
     .profile-stat-num { font-size:1.8rem; font-weight:800; color:var(--accent); margin-bottom:2px; }
     .profile-stat-label { font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--text-3); }
+
+    /* ── Music Personality Profile (full screen) ── */
+    .personality-wrap { max-width:720px; margin:0 auto; padding:32px 24px 80px; }
+    .personality-header { margin-bottom:36px; }
+    .personality-back { background:transparent; border:1px solid rgba(255,255,255,.25); border-radius:10px; padding:8px 16px; color:var(--text-2); font-family:inherit; font-size:.82rem; font-weight:600; cursor:pointer; transition:all .25s; margin-bottom:20px; }
+    .personality-back:hover { border-color:var(--accent); color:var(--accent); }
+    .personality-title { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,4vw,2.4rem); font-weight:700; letter-spacing:-.02em; margin-bottom:6px; background:linear-gradient(135deg,var(--text-1) 30%,var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .personality-subtitle { font-size:.9rem; color:var(--text-3); }
+    .personality-insights { background:var(--glass); border:1px solid var(--glass-border); border-radius:18px; padding:24px 28px; margin-bottom:32px; }
+    .personality-insights-title { font-size:.72rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); margin-bottom:16px; }
+    .personality-insight { font-family:'Playfair Display',serif; font-style:italic; font-size:1.05rem; color:var(--text-2); line-height:1.75; margin-bottom:14px; }
+    .personality-insight:last-child { margin-bottom:0; }
+    .personality-stats { display:flex; flex-wrap:wrap; gap:14px; margin-bottom:28px; }
+    .personality-stat { padding:16px 22px; background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; }
+    .personality-stat-num { font-size:1.6rem; font-weight:800; color:var(--accent); }
+    .personality-stat-label { font-size:.68rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--text-3); margin-top:4px; }
+    .personality-section { margin-bottom:28px; }
+    .personality-section-title { font-size:.75rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:14px; }
+    .personality-tags { display:flex; flex-wrap:wrap; gap:8px; }
+    .personality-tag { padding:8px 14px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:10px; font-size:.82rem; color:var(--text-2); display:flex; align-items:center; gap:6px; }
+    .personality-detail-link { margin-top:24px; }
+    .personality-empty { text-align:center; padding:48px 24px; color:var(--text-3); font-family:'Playfair Display',serif; font-style:italic; font-size:1rem; line-height:1.7; }
 
     /* ── Reflection / Journal ── */
     .journal-section { margin-top:36px; animation:fadeInUp .55s var(--ease) .1s both; }
@@ -522,8 +557,8 @@
           <button class="my-albums-btn" id="myAlbumsBtn" onclick="openSaved()">
             ♥ &nbsp;My Albums <span class="saved-badge" id="savedBadge">0</span>
           </button>
-          <button class="my-albums-btn" id="profileBtn" onclick="openProfile()" title="Your music by mood">
-            📊 &nbsp;My Music Profile
+          <button class="my-albums-btn" id="profileBtn" onclick="openPersonality()" title="Your music personality">
+            ✦ &nbsp;Personality Profile
           </button>
           <button class="settings-btn" id="settingsBtn" onclick="openSettings()">
             <span class="spotify-dot"></span>⚙ &nbsp;Settings
@@ -612,6 +647,8 @@
                 <h2 class="album-title" id="albumTitle"></h2>
                 <p class="album-artist" id="albumArtist"></p>
                 <p class="album-vibe" id="albumVibe"></p>
+                <div class="album-narrative" id="albumNarrative"></div>
+                <div class="album-why-matters" id="albumWhyMatters"></div>
                 <p class="album-why" id="albumWhy"></p>
               </div>
               <div id="spotifyEmbedWrap" class="spotify-embed-wrap" style="display:none">
@@ -675,6 +712,18 @@
 
     </div>
   </div><!-- /s-main -->
+
+  <!-- SCREEN: MUSIC PERSONALITY PROFILE -->
+  <div id="s-personality" class="screen">
+    <div class="personality-wrap">
+      <div class="personality-header">
+        <button class="personality-back" onclick="showScreen('s-main')">← Back</button>
+        <h1 class="personality-title">Music Personality Profile</h1>
+        <p class="personality-subtitle" id="personalityUserName"></p>
+      </div>
+      <div class="personality-content" id="personalityContent"></div>
+    </div>
+  </div>
 
   <!-- MODAL: SAVED -->
   <div id="m-saved" class="modal">
@@ -812,6 +861,11 @@
   const TIME_PHRASES = {
     morning:'This morning',afternoon:'This afternoon',evening:'This evening',night:'Tonight',
   };
+  const TIME_ENERGY = { morning:'quiet morning energy', afternoon:'afternoon energy', evening:'reflective evening energy', night:'late-night energy' };
+  const TIME_CONTEXT = { morning:'a gentle start to the day', afternoon:'an afternoon escape', evening:'quiet listening', night:'deep, focused listening' };
+  const TIME_INSIGHT = { morning:'early mornings', afternoon:'afternoons', evening:'evenings', night:'late nights' };
+  const TIME_LISTENING_INSIGHT = { morning:'the quiet of early morning', afternoon:'you need an afternoon escape', evening:'reflective', night:'settling in for the night' };
+  const MOOD_INSIGHT_ADJ = { melancholic:'atmospheric and introspective', nostalgic:'nostalgic and reflective', calm:'calm and peaceful', romantic:'romantic and tender', sad:'emotional and cathartic', happy:'joyful and uplifting', energetic:'energetic and dynamic', focused:'focused and intentional', anxious:'intense and restless', excited:'excited and euphoric', angry:'raw and powerful', peaceful:'peaceful and meditative', hopeful:'hopeful and forward-looking', lonely:'introspective and vulnerable', wistful:'wistful and bittersweet', contemplative:'reflective and contemplative', dreamy:'dreamy and atmospheric', tender:'tender and gentle' };
 
   // Spotify audio features per mood (used for Recommendations API)
   const MOOD_AUDIO = {
@@ -982,7 +1036,7 @@
     // ── Classic / Timeless ──
     {title:'Abbey Road',artist:'The Beatles',year:1969,genre:'Rock',genreTags:['classic-rock','pop'],moods:['happy','nostalgic','calm'],times:['morning','afternoon'],vibe:"A sun-drenched medley of life's sweetest moments — golden harmonies that feel like warmth through an open window.",search:'Abbey Road Beatles'},
     {title:"Sgt. Pepper's Lonely Hearts Club Band",artist:'The Beatles',year:1967,genre:'Psychedelic Pop',genreTags:['classic-rock','pop','psychedelic'],moods:['happy','nostalgic','excited','calm'],times:['morning','afternoon'],vibe:'A psychedelic concept album that reinvented what a record could be — playful, revolutionary, and perennially surprising.',search:'Sgt Peppers Beatles'},
-    {title:'Rumours',artist:'Fleetwood Mac',year:1977,genre:'Classic Rock',genreTags:['classic-rock','rock'],moods:['happy','nostalgic','melancholic','sad'],times:['afternoon','evening'],vibe:'Born from heartbreak but radiating irresistible warmth — the sound of complicated emotions made timeless.',search:'Rumours Fleetwood Mac'},
+    {title:'Rumours',artist:'Fleetwood Mac',year:1977,genre:'Classic Rock',genreTags:['classic-rock','rock'],moods:['happy','nostalgic','melancholic','sad'],times:['afternoon','evening'],vibe:'Born from heartbreak but radiating irresistible warmth — the sound of complicated emotions made timeless.',search:'Rumours Fleetwood Mac',whyThisMatters:'Recorded amid the band\'s own romantic turmoil, Rumours became one of the best-selling albums of all time and defined the sound of 70s California rock.',similarArtists:['Stevie Nicks','The Eagles','Linda Ronstadt'],standoutTracks:['Go Your Own Way','Dreams','The Chain']},
     {title:'Pet Sounds',artist:'The Beach Boys',year:1966,genre:'Pop / Rock',genreTags:['classic-rock','pop','psychedelic'],moods:['happy','nostalgic','melancholic','calm'],times:['morning','afternoon'],vibe:'Lush orchestral pop that captures the bittersweet feeling of summer — warm, wistful, and impossibly beautiful.',search:'Pet Sounds Beach Boys'},
     {title:'Graceland',artist:'Paul Simon',year:1986,genre:'World / Pop',genreTags:['world','pop','singer-songwriter'],moods:['happy','nostalgic','calm','peaceful'],times:['morning','afternoon'],vibe:'A jubilant journey through South African rhythms and American highways — music that makes you want to move and drift at once.',search:'Graceland Paul Simon'},
     {title:'Astral Weeks',artist:'Van Morrison',year:1968,genre:'Folk / Jazz / Soul',genreTags:['folk','jazz','soul','singer-songwriter'],moods:['calm','nostalgic','peaceful','romantic'],times:['morning','evening'],vibe:'Stream-of-consciousness folk-jazz of unparalleled beauty — Van Morrison in a trance, and you along with him.',search:'Astral Weeks Van Morrison'},
@@ -993,7 +1047,7 @@
     {title:'Wish You Were Here',artist:'Pink Floyd',year:1975,genre:'Progressive Rock',genreTags:['progressive','classic-rock'],moods:['melancholic','nostalgic','sad','calm'],times:['afternoon','evening','night'],vibe:'An elegy for a lost friend and a lost mind — vast, aching, and achingly human at its core.',search:'Wish You Were Here Pink Floyd'},
     {title:'The Rise and Fall of Ziggy Stardust',artist:'David Bowie',year:1972,genre:'Glam Rock',genreTags:['classic-rock','pop'],moods:['energetic','excited','nostalgic','happy'],times:['afternoon','evening'],vibe:'A glam rock concept album about an alien messiah — theatrical, fearless, and crackling with otherworldly electricity.',search:'Ziggy Stardust David Bowie'},
     {title:'Heroes',artist:'David Bowie',year:1977,genre:'Art Rock',genreTags:['classic-rock','new-wave','electronic'],moods:['nostalgic','melancholic','energetic','calm'],times:['morning','afternoon','evening'],vibe:'Berlin-era Bowie at the peak of his experimental powers — the title track alone justifies every superlative ever written.',search:'Heroes David Bowie'},
-    {title:'London Calling',artist:'The Clash',year:1979,genre:'Punk / Rock',genreTags:['punk','rock','new-wave'],moods:['energetic','angry','nostalgic','excited'],times:['afternoon','evening'],vibe:'A double album of furious punk rock fused with reggae, ska, and rockabilly — the sound of a world on fire.',search:'London Calling The Clash'},
+    {title:'London Calling',artist:'The Clash',year:1979,genre:'Punk / Rock',genreTags:['punk','rock','new-wave'],moods:['energetic','angry','nostalgic','excited'],times:['afternoon','evening'],vibe:'A double album of furious punk rock fused with reggae, ska, and rockabilly — the sound of a world on fire.',search:'London Calling The Clash',whyThisMatters:'Punk\'s most ambitious statement. The Clash proved the genre could embrace reggae, rockabilly, and pop without losing its edge — and the title track became an anthem for the ages.',similarArtists:['The Sex Pistols','Elvis Costello','The Jam'],standoutTracks:['London Calling','Train in Vain','Clampdown']},
     {title:'Marquee Moon',artist:'Television',year:1977,genre:'Post-Punk',genreTags:['post-punk','rock'],moods:['energetic','focused','nostalgic','anxious'],times:['afternoon','evening'],vibe:'Two guitars in intricate, interlocking dialogue — technically astonishing post-punk that never stops surprising you.',search:'Marquee Moon Television'},
     {title:'Remain in Light',artist:'Talking Heads',year:1980,genre:'New Wave',genreTags:['new-wave','funk','rock'],moods:['energetic','anxious','focused','excited'],times:['afternoon','evening'],vibe:'African polyrhythms meet downtown New York art rock — restless, hypnotic, and utterly unlike anything before it.',search:'Remain in Light Talking Heads'},
     {title:'The Joshua Tree',artist:'U2',year:1987,genre:'Rock',genreTags:['rock','alternative'],moods:['melancholic','nostalgic','calm','energetic'],times:['morning','afternoon','evening'],vibe:'Wide-screen stadium rock searching for something sacred — epic, yearning, and impossibly atmospheric.',search:'The Joshua Tree U2'},
@@ -1002,7 +1056,7 @@
     {title:'Automatic for the People',artist:'R.E.M.',year:1992,genre:'Alternative Rock',genreTags:['alternative','rock','indie'],moods:['melancholic','nostalgic','sad','calm'],times:['morning','afternoon','evening'],vibe:'Quietly devastating alternative rock about loss, time, and the passage of everything you love.',search:'Automatic for the People REM'},
     {title:'Disintegration',artist:'The Cure',year:1989,genre:'Post-Punk / Goth',genreTags:['post-punk','dream-pop'],moods:['melancholic','sad','calm','romantic'],times:['evening','night'],vibe:'Lush, gothic post-punk that wraps heartache in orchestral grandeur — eight minutes of drowning never felt so beautiful.',search:'Disintegration The Cure'},
     // ── Jazz ──
-    {title:'Kind of Blue',artist:'Miles Davis',year:1959,genre:'Jazz',genreTags:['jazz'],moods:['calm','focused','nostalgic','peaceful'],times:['morning','afternoon','evening'],vibe:'The definitive statement in modal jazz — cool, meditative, and as spacious as a clear blue sky.',search:'Kind of Blue Miles Davis'},
+    {title:'Kind of Blue',artist:'Miles Davis',year:1959,genre:'Jazz',genreTags:['jazz'],moods:['calm','focused','nostalgic','peaceful'],times:['morning','afternoon','evening'],vibe:'The definitive statement in modal jazz — cool, meditative, and as spacious as a clear blue sky.',search:'Kind of Blue Miles Davis',whyThisMatters:'The best-selling jazz album ever. Its modal approach freed improvisation from chord changes and influenced every genre from rock to hip-hop.',similarArtists:['John Coltrane','Bill Evans','Cannonball Adderley'],standoutTracks:['So What','Blue in Green','All Blues']},
     {title:'A Love Supreme',artist:'John Coltrane',year:1965,genre:'Jazz',genreTags:['jazz'],moods:['calm','focused','romantic','peaceful'],times:['morning','evening','night'],vibe:'A four-part spiritual suite that feels like a conversation between the human and the divine.',search:'A Love Supreme John Coltrane'},
     {title:'Giant Steps',artist:'John Coltrane',year:1960,genre:'Jazz',genreTags:['jazz'],moods:['focused','energetic','anxious'],times:['morning','afternoon'],vibe:'The album that rewrote the harmonic language of jazz — relentless, virtuosic, and impossibly fast.',search:'Giant Steps John Coltrane'},
     {title:'Bitches Brew',artist:'Miles Davis',year:1970,genre:'Jazz / Electronic',genreTags:['jazz','electronic','psychedelic'],moods:['energetic','focused','anxious','melancholic'],times:['evening','night'],vibe:'The birth of fusion — electric, chaotic, and sprawling in ways that still feel ahead of their time.',search:'Bitches Brew Miles Davis'},
@@ -1011,7 +1065,7 @@
     {title:'In a Silent Way',artist:'Miles Davis',year:1969,genre:'Jazz / Electronic',genreTags:['jazz','electronic'],moods:['calm','focused','peaceful','melancholic'],times:['morning','night'],vibe:'Hushed and hypnotic, this proto-ambient jazz album unfolds like mist over still water.',search:'In a Silent Way Miles Davis'},
     {title:'Music for Airports',artist:'Brian Eno',year:1978,genre:'Ambient',genreTags:['ambient','electronic'],moods:['calm','focused','peaceful'],times:['morning','night'],vibe:'Pioneering ambient music that exists to transform space — slow, breathable, luminous, and endlessly patient.',search:'Music for Airports Brian Eno'},
     // ── Hip-Hop ──
-    {title:'Illmatic',artist:'Nas',year:1994,genre:'Hip-Hop',genreTags:['hiphop'],moods:['focused','nostalgic','energetic','melancholic'],times:['afternoon','evening','night'],vibe:'Ten tracks of New York storytelling so vivid and precise it redefined what rap could be.',search:'Illmatic Nas'},
+    {title:'Illmatic',artist:'Nas',year:1994,genre:'Hip-Hop',genreTags:['hiphop'],moods:['focused','nostalgic','energetic','melancholic'],times:['afternoon','evening','night'],vibe:'Ten tracks of New York storytelling so vivid and precise it redefined what rap could be.',search:'Illmatic Nas',whyThisMatters:'A 20-year-old from Queens delivered the definitive East Coast hip-hop album — dense lyricism, jazz samples, and street-level poetry that set the bar for decades.',similarArtists:['Jay-Z','Raekwon','AZ'],standoutTracks:['N.Y. State of Mind','One Love','Life\'s a Bitch']},
     {title:'The Chronic',artist:'Dr. Dre',year:1992,genre:'Hip-Hop',genreTags:['hiphop','funk'],moods:['energetic','focused','excited','nostalgic'],times:['afternoon','evening'],vibe:'G-funk immortalized on wax — laid-back, menacing, and impossibly smooth all at once.',search:'The Chronic Dr Dre'},
     {title:'Aquemini',artist:'OutKast',year:1998,genre:'Hip-Hop',genreTags:['hiphop'],moods:['energetic','happy','nostalgic','focused'],times:['afternoon','evening'],vibe:'Southern rap at its most expansive — Andre 3000 and Big Boi reaching together for the cosmos.',search:'Aquemini Outkast'},
     {title:'Midnight Marauders',artist:'A Tribe Called Quest',year:1993,genre:'Hip-Hop / Jazz Rap',genreTags:['hiphop','jazz'],moods:['happy','energetic','nostalgic','calm'],times:['afternoon','evening'],vibe:'Jazz samples and sharp rhymes woven into silky hip-hop perfection — warm, funny, and effortlessly cool.',search:'Midnight Marauders A Tribe Called Quest'},
@@ -1024,22 +1078,22 @@
     {title:'The College Dropout',artist:'Kanye West',year:2004,genre:'Hip-Hop',genreTags:['hiphop'],moods:['happy','energetic','nostalgic','excited'],times:['afternoon','evening'],vibe:'Soul-sampling, self-doubting, triumphant hip-hop — funny, emotional, and brimming with restless ambition.',search:'College Dropout Kanye West'},
     // ── Soul / R&B ──
     {title:'Songs in the Key of Life',artist:'Stevie Wonder',year:1976,genre:'Soul / R&B',genreTags:['soul','rnb','funk'],moods:['happy','nostalgic','energetic','calm'],times:['morning','afternoon','evening'],vibe:'Two hours of unbounded Stevie Wonder genius — joyful, complex, political, and endlessly listenable.',search:'Songs in the Key of Life Stevie Wonder'},
-    {title:"What's Going On",artist:'Marvin Gaye',year:1971,genre:'Soul / R&B',genreTags:['soul','rnb','funk'],moods:['calm','melancholic','nostalgic','peaceful'],times:['morning','afternoon','evening'],vibe:'A soul masterpiece about war, poverty, and love — still one of the most relevant albums ever recorded.',search:'Whats Going On Marvin Gaye'},
+    {title:"What's Going On",artist:'Marvin Gaye',year:1971,genre:'Soul / R&B',genreTags:['soul','rnb','funk'],moods:['calm','melancholic','nostalgic','peaceful'],times:['morning','afternoon','evening'],vibe:'A soul masterpiece about war, poverty, and love — still one of the most relevant albums ever recorded.',search:'Whats Going On Marvin Gaye',whyThisMatters:'Motown\'s first concept album. Gaye fought the label to release a politically charged suite about Vietnam, ecology, and social justice — and changed soul music forever.',similarArtists:['Stevie Wonder','Curtis Mayfield','Al Green'],standoutTracks:['What\'s Going On','Mercy Mercy Me','Inner City Blues']},
     {title:'Off the Wall',artist:'Michael Jackson',year:1979,genre:'Pop / R&B',genreTags:['pop','rnb','funk','disco'],moods:['happy','energetic','excited','nostalgic'],times:['afternoon','evening'],vibe:'Before Thriller, there was Off the Wall — Michael at his most jubilant, funky, and impossibly free.',search:'Off the Wall Michael Jackson'},
     {title:"Sign O' the Times",artist:'Prince',year:1987,genre:'Pop / R&B / Funk',genreTags:['pop','rnb','funk'],moods:['energetic','excited','melancholic','nostalgic'],times:['afternoon','evening'],vibe:'A double album of bewildering range and mastery — Prince at the absolute height of his creative powers.',search:'Sign O The Times Prince'},
     {title:'The Miseducation of Lauryn Hill',artist:'Lauryn Hill',year:1998,genre:'R&B / Soul',genreTags:['rnb','soul','hiphop'],moods:['happy','nostalgic','melancholic','energetic'],times:['morning','afternoon','evening'],vibe:'Raw, revolutionary soul — a singular statement on love, loss, and rebirth that feels eternally present.',search:'Miseducation Lauryn Hill'},
     {title:'Back to Black',artist:'Amy Winehouse',year:2006,genre:'Soul / R&B',genreTags:['soul','rnb'],moods:['sad','nostalgic','melancholic','angry'],times:['evening','night'],vibe:'Retro soul drenched in heartbreak — raw, magnetic, and achingly modern despite its vintage sound.',search:'Back to Black Amy Winehouse'},
     {title:'Diamond Life',artist:'Sade',year:1984,genre:'Soul / Jazz',genreTags:['soul','jazz','rnb'],moods:['romantic','calm','happy','peaceful'],times:['evening','night'],vibe:'Sophisticated, sensual, and irresistibly smooth — the perfect soundtrack for slow, candlelit hours.',search:'Diamond Life Sade'},
     {title:'Ctrl',artist:'SZA',year:2017,genre:'R&B',genreTags:['rnb','neo-soul'],moods:['happy','melancholic','nostalgic','calm','romantic'],times:['afternoon','evening'],vibe:'Honest, meandering R&B that captures the vulnerable haze of early adulthood with devastating clarity.',search:'Ctrl SZA'},
-    {title:'Channel Orange',artist:'Frank Ocean',year:2012,genre:'R&B / Soul',genreTags:['rnb','neo-soul'],moods:['happy','calm','nostalgic','romantic','excited'],times:['afternoon','evening'],vibe:'Languid, sun-baked R&B that drifts like a summer afternoon — vivid characters, half-remembered feelings.',search:'Channel Orange Frank Ocean'},
+    {title:'Channel Orange',artist:'Frank Ocean',year:2012,genre:'R&B / Soul',genreTags:['rnb','neo-soul'],moods:['happy','calm','nostalgic','romantic','excited'],times:['afternoon','evening'],vibe:'Languid, sun-baked R&B that drifts like a summer afternoon — vivid characters, half-remembered feelings.',search:'Channel Orange Frank Ocean',whyThisMatters:'Redefined R&B for a new generation. Ocean\'s narrative songwriting and genre-blurring production opened the door for a wave of alternative soul.',similarArtists:['SZA','Daniel Caesar','Steve Lacy'],standoutTracks:['Thinkin Bout You','Pyramids','Bad Religion']},
     {title:'Voodoo',artist:"D'Angelo",year:2000,genre:'Neo-Soul',genreTags:['neo-soul','rnb','funk'],moods:['romantic','calm','energetic','happy'],times:['evening','night'],vibe:'Loose, sensual, and deeply funky — neo-soul at its most hypnotic, unhurried, and intoxicating.',search:'Voodoo D Angelo'},
     // ── Electronic / Dance ──
-    {title:'Random Access Memories',artist:'Daft Punk',year:2013,genre:'Electronic / Funk',genreTags:['electronic','disco','funk','house'],moods:['happy','energetic','nostalgic','excited'],times:['evening','night'],vibe:'A love letter to disco and human connection — warm, crafted with obsessive care, and endlessly joyful.',search:'Random Access Memories Daft Punk'},
+    {title:'Random Access Memories',artist:'Daft Punk',year:2013,genre:'Electronic / Funk',genreTags:['electronic','disco','funk','house'],moods:['happy','energetic','nostalgic','excited'],times:['evening','night'],vibe:'A love letter to disco and human connection — warm, crafted with obsessive care, and endlessly joyful.',search:'Random Access Memories Daft Punk',whyThisMatters:'Daft Punk went analog, hiring live musicians and vintage gear to create a disco revival that won Album of the Year and proved electronic acts could make timeless records.',similarArtists:['Phoenix','Justice','LCD Soundsystem'],standoutTracks:['Get Lucky','Instant Crush','Giorgio by Moroder']},
     {title:'Discovery',artist:'Daft Punk',year:2001,genre:'Electronic / House',genreTags:['electronic','house'],moods:['energetic','happy','nostalgic','excited'],times:['afternoon','evening'],vibe:'Pure filtered house euphoria — nostalgia for a cartoon future, assembled entirely from synthesizers and joy.',search:'Discovery Daft Punk'},
     {title:'Homework',artist:'Daft Punk',year:1997,genre:'Electronic / House',genreTags:['electronic','house','funk'],moods:['energetic','happy','excited','nostalgic'],times:['afternoon','evening'],vibe:'The French house revolution begins here — filtered samples and relentless grooves that still pack every dance floor.',search:'Homework Daft Punk'},
     {title:'Blue Lines',artist:'Massive Attack',year:1991,genre:'Trip-Hop',genreTags:['trip-hop','electronic','soul'],moods:['calm','romantic','melancholic','nostalgic'],times:['evening','night'],vibe:'The album that invented trip-hop — smoky, sensual, and cinematic in ways that still feel modern.',search:'Blue Lines Massive Attack'},
     {title:'Mezzanine',artist:'Massive Attack',year:1998,genre:'Trip-Hop',genreTags:['trip-hop','electronic'],moods:['romantic','melancholic','anxious','calm'],times:['night'],vibe:'Dense and cinematic trip-hop that envelops you completely — dark, sensual, and utterly hypnotic.',search:'Mezzanine Massive Attack'},
-    {title:'Dummy',artist:'Portishead',year:1994,genre:'Trip-Hop',genreTags:['trip-hop','electronic'],moods:['romantic','melancholic','calm','anxious'],times:['evening','night'],vibe:'Noir trip-hop that sounds like a spy film scored from the inside of a broken heart.',search:'Dummy Portishead'},
+    {title:'Dummy',artist:'Portishead',year:1994,genre:'Trip-Hop',genreTags:['trip-hop','electronic'],moods:['romantic','melancholic','calm','anxious'],times:['evening','night'],vibe:'Noir trip-hop that sounds like a spy film scored from the inside of a broken heart.',search:'Dummy Portishead',whyThisMatters:'Bristol trip-hop at its peak. Dummy fused downtempo beats, jazz samples, and Beth Gibbons\' haunting voice into a new kind of nocturnal sound.',similarArtists:['Massive Attack','Tricky','Morcheeba'],standoutTracks:['Glory Box','Sour Times','Roads']},
     {title:'The Fat of the Land',artist:'The Prodigy',year:1997,genre:'Electronic / Breakbeat',genreTags:['electronic','punk'],moods:['energetic','angry','excited','anxious'],times:['afternoon','evening'],vibe:'Rave culture meets industrial aggression — the most viscerally thrilling big beat album ever made.',search:'Fat of the Land Prodigy'},
     {title:'Selected Ambient Works Vol. II',artist:'Aphex Twin',year:1994,genre:'Ambient',genreTags:['ambient','electronic'],moods:['calm','anxious','focused','peaceful'],times:['night'],vibe:'Deeply unsettling yet strangely beautiful ambient textures — mysterious, immersive, and endlessly deep.',search:'Selected Ambient Works Volume 2 Aphex Twin'},
     {title:'Richard D. James Album',artist:'Aphex Twin',year:1996,genre:'Electronic',genreTags:['electronic','ambient'],moods:['energetic','focused','anxious','melancholic'],times:['afternoon','evening','night'],vibe:'Drill-and-bass and eerie melodies in perfect, unsettling balance — technically dazzling and deeply felt.',search:'Richard D James Album Aphex Twin'},
@@ -1064,7 +1118,7 @@
     {title:'Funeral',artist:'Arcade Fire',year:2004,genre:'Indie Rock',genreTags:['indie','rock'],moods:['nostalgic','melancholic','happy','sad','energetic'],times:['morning','afternoon','evening'],vibe:'Indie rock built like a cathedral — communal, overwhelming, and bursting with the joy of being alive.',search:'Funeral Arcade Fire'},
     {title:'Neon Bible',artist:'Arcade Fire',year:2007,genre:'Indie Rock',genreTags:['indie','rock','alternative'],moods:['anxious','melancholic','nostalgic','energetic'],times:['afternoon','evening','night'],vibe:'Apocalyptic orchestral rock that captures the dread of modern life with theatrical, sweeping grandeur.',search:'Neon Bible Arcade Fire'},
     {title:'In Rainbows',artist:'Radiohead',year:2007,genre:'Art Rock',genreTags:['rock','alternative'],moods:['melancholic','focused','calm','romantic'],times:['morning','afternoon','evening','night'],vibe:'Radiohead at their most warm and human — introspective rock with a quietly beating heart at its centre.',search:'In Rainbows Radiohead'},
-    {title:'OK Computer',artist:'Radiohead',year:1997,genre:'Art Rock',genreTags:['rock','alternative'],moods:['anxious','melancholic','focused','sad'],times:['evening','night'],vibe:'A prescient meditation on technology and alienation — unsettling, gorgeous, and more relevant than ever.',search:'OK Computer Radiohead'},
+    {title:'OK Computer',artist:'Radiohead',year:1997,genre:'Art Rock',genreTags:['rock','alternative'],moods:['anxious','melancholic','focused','sad'],times:['evening','night'],vibe:'A prescient meditation on technology and alienation — unsettling, gorgeous, and more relevant than ever.',search:'OK Computer Radiohead',whyThisMatters:'Captured millennial anxiety before Y2K. Its blend of art rock and electronic textures predicted the digital age and influenced countless bands.',similarArtists:['Pink Floyd','Sigur Rós','Muse'],standoutTracks:['Paranoid Android','Karma Police','Exit Music (For a Film)']},
     {title:'Kid A',artist:'Radiohead',year:2000,genre:'Electronic / Rock',genreTags:['rock','electronic','alternative'],moods:['anxious','focused','melancholic','calm'],times:['night'],vibe:'A radical departure into the electronic unknown — cold, alien, and strangely moving in its blankness.',search:'Kid A Radiohead'},
     {title:'The Moon & Antarctica',artist:'Modest Mouse',year:2000,genre:'Indie Rock',genreTags:['indie','rock','alternative'],moods:['melancholic','sad','anxious','focused'],times:['night'],vibe:'A sprawling philosophical rock album about the cosmos, mortality, and the absurdity of simply existing.',search:'Moon Antarctica Modest Mouse'},
     {title:'The Queen Is Dead',artist:'The Smiths',year:1986,genre:'Post-Punk',genreTags:['indie','post-punk','rock'],moods:['melancholic','nostalgic','sad','angry'],times:['afternoon','evening','night'],vibe:'Mordant wit wrapped in jangling guitars — the sound of being young, misunderstood, and thrillingly alive.',search:'The Queen Is Dead Smiths'},
@@ -1072,7 +1126,7 @@
     {title:'Is This It',artist:'The Strokes',year:2001,genre:'Indie Rock',genreTags:['indie','rock'],moods:['energetic','nostalgic','excited','happy'],times:['afternoon','evening'],vibe:'The New York rock revival in 36 perfect minutes — cool, effortless, and completely alive.',search:'Is This It Strokes'},
     {title:'Siamese Dream',artist:'The Smashing Pumpkins',year:1993,genre:'Alternative Rock',genreTags:['alternative','grunge'],moods:['melancholic','energetic','nostalgic','anxious'],times:['afternoon','evening'],vibe:'Huge walls of guitar and fragile introspection — alternative rock that manages to be both abrasive and deeply tender.',search:'Siamese Dream Smashing Pumpkins'},
     // ── Folk / Singer-Songwriter ──
-    {title:'Blue',artist:'Joni Mitchell',year:1971,genre:'Folk',genreTags:['folk','singer-songwriter'],moods:['sad','melancholic','nostalgic','calm'],times:['morning','afternoon','evening','night'],vibe:'Confessional folk poetry stripped completely bare — heartache distilled into something fragile and eternal.',search:'Blue Joni Mitchell'},
+    {title:'Blue',artist:'Joni Mitchell',year:1971,genre:'Folk',genreTags:['folk','singer-songwriter'],moods:['sad','melancholic','nostalgic','calm'],times:['morning','afternoon','evening','night'],vibe:'Confessional folk poetry stripped completely bare — heartache distilled into something fragile and eternal.',search:'Blue Joni Mitchell',whyThisMatters:'The template for confessional singer-songwriter albums. Mitchell\'s open tunings and raw honesty set a new standard for emotional transparency in music.',similarArtists:['Carole King','James Taylor','Laura Nyro'],standoutTracks:['River','A Case of You','All I Want']},
     {title:'Pink Moon',artist:'Nick Drake',year:1972,genre:'Folk',genreTags:['folk','singer-songwriter'],moods:['sad','melancholic','peaceful','nostalgic'],times:['night','morning'],vibe:'28 minutes of hushed, fingerpicked beauty recorded in two nights — fragile and perfect as snowfall.',search:'Pink Moon Nick Drake'},
     {title:'Five Leaves Left',artist:'Nick Drake',year:1969,genre:'Folk',genreTags:['folk','singer-songwriter'],moods:['melancholic','nostalgic','calm','peaceful'],times:['evening','night'],vibe:'Orchestral folk of unearthly delicacy — string arrangements wrapping a young voice in autumnal beauty.',search:'Five Leaves Left Nick Drake'},
     {title:'For Emma, Forever Ago',artist:'Bon Iver',year:2007,genre:'Folk / Indie',genreTags:['indie-folk','folk','singer-songwriter'],moods:['sad','melancholic','calm','peaceful'],times:['morning','night'],vibe:'Born in an isolated Wisconsin cabin, these songs feel like snow — quiet, lonely, and impossibly beautiful.',search:'For Emma Forever Ago Bon Iver'},
@@ -1085,7 +1139,7 @@
     {title:'Morning Phase',artist:'Beck',year:2014,genre:'Folk / Rock',genreTags:['folk','rock','singer-songwriter'],moods:['calm','melancholic','sad','peaceful'],times:['morning'],vibe:'Misty folk-rock draped in orchestral strings — the sound of quiet contemplation before the world wakes up.',search:'Morning Phase Beck'},
     {title:'Sea Change',artist:'Beck',year:2002,genre:'Folk / Rock',genreTags:['folk','rock','singer-songwriter'],moods:['calm','sad','melancholic','peaceful'],times:['evening','night'],vibe:'Orchestral breakup folk of the highest order — lush, cinematic, and quietly devastating.',search:'Sea Change Beck'},
     // ── Rock (continued) ──
-    {title:'Nevermind',artist:'Nirvana',year:1991,genre:'Grunge / Rock',genreTags:['grunge','rock'],moods:['energetic','nostalgic','sad','angry'],times:['afternoon','evening'],vibe:'The explosion that changed rock forever — raw, melodic, and bursting with teenage frustration and beauty.',search:'Nevermind Nirvana'},
+    {title:'Nevermind',artist:'Nirvana',year:1991,genre:'Grunge / Rock',genreTags:['grunge','rock'],moods:['energetic','nostalgic','sad','angry'],times:['afternoon','evening'],vibe:'The explosion that changed rock forever — raw, melodic, and bursting with teenage frustration and beauty.',search:'Nevermind Nirvana',whyThisMatters:'Grunge went global overnight. Smells Like Teen Spirit dethroned Michael Jackson and proved alternative rock could dominate the mainstream.',similarArtists:['Pearl Jam','Soundgarden','Alice in Chains'],standoutTracks:['Smells Like Teen Spirit','Come as You Are','Lithium']},
     {title:'Born to Run',artist:'Bruce Springsteen',year:1975,genre:'Rock',genreTags:['rock','classic-rock'],moods:['energetic','happy','nostalgic','excited'],times:['afternoon','evening'],vibe:'Orchestral rock and roll that captures the desperate, romantic longing for escape, freedom, and open roads.',search:'Born to Run Bruce Springsteen'},
     {title:'Hybrid Theory',artist:'Linkin Park',year:2000,genre:'Nu-Metal / Rock',genreTags:['rock','metal'],moods:['energetic','angry','anxious','sad'],times:['afternoon','evening'],vibe:"The defining sound of a generation's frustration — metal riffs, hip-hop rhythms, and cathartic release.",search:'Hybrid Theory Linkin Park'},
     {title:'Purple Rain',artist:'Prince',year:1984,genre:'Pop / R&B',genreTags:['pop','rnb','rock'],moods:['romantic','energetic','happy','nostalgic','excited'],times:['evening','night'],vibe:'A theatrical, genre-defying storm of guitar heroics, purple funk, and pure pop transcendence.',search:'Purple Rain Prince'},
@@ -1197,7 +1251,7 @@
     const user=getCurrentUser();
     if(user){ if(user.onboardingComplete){initMainApp();showScreen('s-main');}else{selectedGenres=new Set(user.favoriteGenres||[]);renderGenresScreen();showScreen('s-genres');} }
     else { renderAuthScreen(); showScreen('s-auth'); }
-    document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeSaved();closeSettings();closeProfile();} });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const ps=document.getElementById('s-personality'); if(ps&&ps.classList.contains('active')){showScreen('s-main');}else{closeSaved();closeSettings();closeProfile();} } });
   }
 
   /* ================================================================
@@ -1321,6 +1375,36 @@
     const phrases=picked.map(id=>MOOD_PHRASES[id]||allMoods().find(m=>m.id===id)?.name?.toLowerCase()).filter(Boolean);
     const mStr=phrases.length===1?phrases[0]:phrases.slice(0,-1).join(', ')+' and '+phrases.at(-1);
     return`${t}, when you're feeling ${mStr}, this album speaks to exactly where you are.`;
+  }
+  function buildNarrative(album) {
+    const picked=[...selectedMoods];
+    const expanded=expandMoods(picked);
+    const matched=album.moods.filter(m=>expanded.includes(m));
+    const energy=TIME_ENERGY[selectedTime]||'this moment';
+    const phrases=picked.map(id=>MOOD_PHRASES[id]||allMoods().find(m=>m.id===id)?.name?.toLowerCase()).filter(Boolean);
+    const moodStr=phrases.length?phrases.length===1?phrases[0]:phrases.slice(0,-1).join(', ')+' and '+phrases.at(-1):'this moment';
+    const moodExplanation=matched.length
+      ?`This album was chosen because your mood selections suggest ${moodStr} — ${energy}.`
+      :`This album was chosen for ${energy}. Its vibe aligns with the moment you're in.`;
+    const listenFor=album.vibe?album.vibe:'Listen for the way this record meets you where you are.';
+    const context=TIME_CONTEXT[selectedTime]||'your current moment';
+    const listeningContext=`Ideal for ${context}.`;
+    return{moodExplanation,listenFor,listeningContext};
+  }
+
+  function buildWhyMatters(album) {
+    if(album.isSpotify)return null;
+    const year=album.year||'—';
+    const genreTags=(album.genreTags||[]).map(g=>typeof g==='string'?g:g.id||g).filter(Boolean);
+    const genreStr=genreTags.length?genreTags.map(g=>g.replace(/-/g,' ')).join(' · '):(album.genre||'—');
+    const historical=album.whyThisMatters||(album.vibe?album.vibe.split('—')[0].trim()+'.':`A landmark in ${genreStr}.`);
+    const similar=Array.isArray(album.similarArtists)&&album.similarArtists.length?album.similarArtists.join(', '):null;
+    const standout=Array.isArray(album.standoutTracks)&&album.standoutTracks.length?album.standoutTracks.slice(0,3).join(' · '):null;
+    const genreTagsHtml=genreTags.length?genreTags.map(g=>`<span class="genre-tag">${escHtml(g.replace(/-/g,' '))}</span>`).join(''):`<span class="genre-tag">${escHtml(album.genre||'—')}</span>`;
+    let html=`<h4 class="why-matters-title">Why This Album Matters</h4><div class="why-matters-meta"><span class="year">${year}</span><span class="genre-tags">${genreTagsHtml}</span></div><p class="why-matters-historical">${escHtml(historical)}</p>`;
+    if(similar)html+=`<p class="why-matters-similar"><strong>Similar:</strong> ${escHtml(similar)}</p>`;
+    if(standout)html+=`<p class="why-matters-standout"><strong>Standout tracks:</strong> ${escHtml(standout)}</p>`;
+    return html;
   }
 
   /* ================================================================
@@ -1487,7 +1571,7 @@
     const u=getCurrentUser(); if(!u||isGuest)return;
     if(!u.savedSongs)u.savedSongs=[];
     const idx=u.savedSongs.findIndex(s=>s.albumTitle===albumTitle&&s.albumArtist===albumArtist&&s.songName===songName);
-    if(idx>=0){u.savedSongs.splice(idx,1);}else{u.savedSongs.push({albumTitle,albumArtist,songName,savedAt:Date.now(),moods:[...selectedMoods]});}
+    if(idx>=0){u.savedSongs.splice(idx,1);}else{u.savedSongs.push({albumTitle,albumArtist,songName,savedAt:Date.now(),moods:[...selectedMoods],time:selectedTime});}
     saveUser(u);
     if(currentAlbumTracks.length)renderTrackList(currentAlbum,currentAlbumTracks);
   }
@@ -1496,6 +1580,11 @@
     document.getElementById('albumTitle').textContent=album.title;
     document.getElementById('albumArtist').textContent=`${album.artist}  ·  ${album.year}`;
     document.getElementById('albumVibe').textContent=album.vibe;
+    const narrative=buildNarrative(album);
+    document.getElementById('albumNarrative').innerHTML=`<p><span class="narr-label">Why this album</span><br>${narrative.moodExplanation}</p><p><span class="narr-label">What to listen for</span><br>${narrative.listenFor}</p><p><span class="narr-label">Best for</span><br>${narrative.listeningContext}</p>`;
+    const whyMatters=buildWhyMatters(album);
+    const whyMattersEl=document.getElementById('albumWhyMatters');
+    if(whyMatters){whyMattersEl.innerHTML=whyMatters;whyMattersEl.style.display='block';}else{whyMattersEl.innerHTML='';whyMattersEl.style.display='none';}
     document.getElementById('albumWhy').textContent=album.isSpotify?`Spotify recommendation based on your mood profile and genre preferences.`:buildWhy(album);
     const isSpotify=album.isSpotify;
     document.getElementById('albumTags').innerHTML=`<span class="tag ${isSpotify?'spotify-tag':''}">${album.genre}</span><span class="tag">${album.year}</span>${isSpotify?'<span class="tag spotify-tag">via Spotify</span>':''}`;
@@ -1741,7 +1830,7 @@
     const u=getCurrentUser();if(!u||!currentAlbum)return;
     const idx=u.savedAlbums.findIndex(a=>a.title===currentAlbum.title);
     if(idx>=0){u.savedAlbums.splice(idx,1);}
-    else{const img=document.getElementById('artImg');u.savedAlbums.push({...currentAlbum,savedAt:Date.now(),artUrl:img.classList.contains('loaded')?img.src:null,moods:[...selectedMoods]});}
+    else{const img=document.getElementById('artImg');u.savedAlbums.push({...currentAlbum,savedAt:Date.now(),artUrl:img.classList.contains('loaded')?img.src:null,moods:[...selectedMoods],time:selectedTime});}
     saveUser(u);updateSaveButton();updateSavedCount();
   }
   function updateSavedCount() { const u=getCurrentUser();const n=u?u.savedAlbums.length:0; const b=document.getElementById('savedBadge');b.textContent=n;b.style.display=n>0?'inline':'none'; }
@@ -1755,7 +1844,50 @@
   function removeSaved(title) { const u=getCurrentUser();if(!u)return; u.savedAlbums=u.savedAlbums.filter(a=>a.title!==title);saveUser(u);updateSavedCount();renderSavedList();if(currentAlbum&&currentAlbum.title===title)updateSaveButton(); }
 
   /* ================================================================
-     MY MUSIC PROFILE (analytics by mood)
+     MUSIC PERSONALITY PROFILE
+  ================================================================ */
+  function openPersonality() {
+    const u=getCurrentUser();
+    document.getElementById('personalityUserName').textContent=u?.displayName?`${u.displayName}'s listening profile`:isGuest?'(sign in to save and build your profile)':'';
+    renderPersonality();
+    showScreen('s-personality');
+  }
+  function renderPersonality() {
+    const u=getCurrentUser(), wrap=document.getElementById('personalityContent');
+    if(!u||isGuest){ wrap.innerHTML='<div class="personality-empty">Sign in to save albums and heart songs — your music personality profile will grow as you discover and collect music.</div>'; return; }
+    const albums=(u.savedAlbums||[]).filter(a=>a.moods&&a.moods.length);
+    const songs=(u.savedSongs||[]).filter(s=>s.moods&&s.moods.length);
+    const allMoods=new Set();
+    albums.forEach(a=>a.moods.forEach(m=>allMoods.add(m)));
+    songs.forEach(s=>s.moods.forEach(m=>allMoods.add(m)));
+    [...(u.likedAlbumMoods||[])].forEach(m=>allMoods.add(m));
+    const moodCounts={};
+    [...allMoods].forEach(m=>{ moodCounts[m]=0; albums.forEach(a=>{if(a.moods.includes(m))moodCounts[m]++;}); songs.forEach(s=>{if(s.moods.includes(m))moodCounts[m]++;}); (u.likedAlbumMoods||[]).forEach(lm=>{if(lm===m)moodCounts[m]++;}); });
+    const sortedMoods=[...allMoods].sort((a,b)=>moodCounts[b]-moodCounts[a]);
+    const favGenres=new Set(u.favoriteGenres||[]);
+    albums.forEach(a=>{ (a.genreTags||[]).forEach(g=>favGenres.add(typeof g==='string'?g:g.id)); });
+    const timeCounts={};
+    [...albums,...songs].filter(x=>x.time).forEach(x=>{ timeCounts[x.time]=(timeCounts[x.time]||0)+1; });
+    const sortedTimes=Object.entries(timeCounts).sort((a,b)=>b[1]-a[1]);
+    const insights=[];
+    if(sortedTimes.length>=1){ const t=sortedTimes[0][0]; insights.push(`You often listen when ${TIME_LISTENING_INSIGHT[t]||TIME_INSIGHT[t]}.`); insights.push(`Your most active listening time is ${TIME_INSIGHT[t]}.`); }
+    if(sortedMoods.length>=1){ const top=sortedMoods.slice(0,2).map(m=>MOOD_INSIGHT_ADJ[m]||allMoods().find(x=>x.id===m)?.name?.toLowerCase()||m).filter(Boolean); if(top.length)insights.push(`Your music taste leans toward ${top.join(' and ')}.`); }
+    if(sortedMoods.length>=2){ const topMoods=sortedMoods.slice(0,3).map(m=>allMoods().find(x=>x.id===m)?.name||m).filter(Boolean); insights.push(`Moods you gravitate toward: ${topMoods.join(', ')}.`); }
+    if(favGenres.size>=1){ const gLabels=[...favGenres].slice(0,5).map(id=>GENRES.find(g=>g.id===id)?.label||String(id).replace(/-/g,' ')).filter(Boolean); if(gLabels.length)insights.push(`You favor ${gLabels.length===1?gLabels[0]:gLabels.slice(0,-1).join(', ')+' and '+gLabels[gLabels.length-1]}.`); }
+    if(albums.length+songs.length>=3)insights.push(`You've saved ${albums.length} album${albums.length!==1?'s':''} and ${songs.length} song${songs.length!==1?'s':''} — your collection reflects your emotional landscape.`);
+    if(!insights.length){ insights.push('Save albums and heart songs to build your personalized music personality profile.'); insights.push('Your insights will appear here as you discover and save more music.'); }
+    const insightsHtml=insights.map(i=>`<p class="personality-insight">${escHtml(i)}</p>`).join('');
+    const statsHtml=`<div class="personality-stats"><div class="personality-stat"><div class="personality-stat-num">${albums.length}</div><div class="personality-stat-label">Albums saved</div></div><div class="personality-stat"><div class="personality-stat-num">${songs.length}</div><div class="personality-stat-label">Songs hearted</div></div><div class="personality-stat"><div class="personality-stat-num">${sortedMoods.length}</div><div class="personality-stat-label">Moods</div></div><div class="personality-stat"><div class="personality-stat-num">${favGenres.size}</div><div class="personality-stat-label">Genres</div></div></div>`;
+    const moodsHtml=sortedMoods.length?`<div class="personality-section"><div class="personality-section-title">Most selected moods</div><div class="personality-tags">${sortedMoods.slice(0,8).map(m=>{ const info=allMoods().find(x=>x.id===m)||{emoji:'🎵',name:m}; return `<span class="personality-tag">${info.emoji||'🎵'} ${escHtml(info.name)}</span>`; }).join('')}</div></div>`:'';
+    const genresHtml=favGenres.size?`<div class="personality-section"><div class="personality-section-title">Favorite genres</div><div class="personality-tags">${[...favGenres].slice(0,10).map(id=>{ const g=GENRES.find(x=>x.id===id)||{emoji:'🎵',label:id}; return `<span class="personality-tag">${g.emoji||'🎵'} ${escHtml(g.label||id)}</span>`; }).join('')}</div></div>`:'';
+    const timesHtml=sortedTimes.length?`<div class="personality-section"><div class="personality-section-title">Listening times</div><div class="personality-tags">${sortedTimes.map(([t,c])=>`<span class="personality-tag">${TIME_INSIGHT[t]||t} • ${c}</span>`).join('')}</div></div>`:'';
+    const albumsPreview=albums.length?`<div class="personality-section"><div class="personality-section-title">Albums saved</div><div class="personality-tags">${[...albums].reverse().slice(0,6).map(a=>`<span class="personality-tag">${escHtml(a.title)}</span>`).join('')}${albums.length>6?`<span class="personality-tag">+${albums.length-6} more</span>`:''}</div></div>`:'';
+    const detailLink=(albums.length||songs.length)?`<p class="personality-detail-link"><button class="personality-back" onclick="showScreen('s-main');openProfile()">View detailed mood breakdown →</button></p>`:'';
+    wrap.innerHTML=`<div class="personality-insights"><div class="personality-insights-title">Your insights</div>${insightsHtml}</div>${statsHtml}${moodsHtml}${genresHtml}${timesHtml}${albumsPreview}${detailLink}`;
+  }
+
+  /* ================================================================
+     MY MUSIC PROFILE (analytics by mood — modal)
   ================================================================ */
   function openProfile() { renderProfile(); document.getElementById('m-profile').classList.add('active'); }
   function closeProfile() { document.getElementById('m-profile').classList.remove('active'); }
